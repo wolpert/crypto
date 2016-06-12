@@ -41,10 +41,11 @@ public class HasherBuilder {
     }
 
     public Hasher build() {
-        if (digest.startsWith("PBK")) {
-            return new OWASPHasherImpl(digest, saltSize, iterations, Charset.forName(charSet), keySize);
+        Charset usableCharset = Charset.forName(charSet);
+        if (digest.startsWith("PBK")) { // sucky?
+            return new OWASPHasherImpl(digest, saltSize, iterations, usableCharset, keySize);
         } else {
-            return new StandardHasherImpl(digest, saltSize, iterations, Charset.forName(charSet));
+            return new StandardHasherImpl(digest, saltSize, iterations, usableCharset);
         }
     }
 }

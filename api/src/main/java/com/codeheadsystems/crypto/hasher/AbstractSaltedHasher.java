@@ -25,6 +25,11 @@ public abstract class AbstractSaltedHasher<T> implements Hasher {
         this.charset = charset;
     }
 
+    @Override
+    public String getDigest() {
+        return digest;
+    }
+
     public byte[] getSalt() {
         return randomBytes(saltSize);
     }

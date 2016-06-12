@@ -18,7 +18,6 @@ public class OWASPHashImplTest extends AbstractHasherTest {
         testWord = "This is a test";
     }
 
-
     @Test
     public void testAlgoChangeFailure() {
         Hasher hasher1 = hasherBuilder.digest("PBKDF2WithHmacSHA512").build();
@@ -26,6 +25,15 @@ public class OWASPHashImplTest extends AbstractHasherTest {
 
         hashersShouldBehaveDifferently(hasher1, hasher2);
     }
+
+    @Test
+    public void testKeySizeChangeFailure() {
+        Hasher hasher1 = hasherBuilder.keySize(256).build();
+        Hasher hasher2 = hasherBuilder.keySize(251).build();
+
+        hashersShouldBehaveDifferently(hasher1, hasher2);
+    }
+
 
     @Test
     public void testCharsetChangeDoesNotFail() {

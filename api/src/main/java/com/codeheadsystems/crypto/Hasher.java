@@ -5,6 +5,8 @@ package com.codeheadsystems.crypto;
  */
 public interface Hasher {
 
+    public String getDigest();
+
     public byte[] generateHash(String unhashedString);
 
     public boolean isSame(byte[] hashedString, String unhashedString);

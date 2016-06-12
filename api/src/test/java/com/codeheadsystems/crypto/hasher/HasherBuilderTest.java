@@ -1,35 +1,22 @@
 package com.codeheadsystems.crypto.hasher;
 
-import com.codeheadsystems.crypto.Hasher;
+import junit.framework.TestCase;
 
-import org.junit.Before;
 import org.junit.Test;
+
+import java.nio.charset.Charset;
 
 /**
  * BSD-Style License 2016
  */
-public class HasherBuilderTest extends AbstractHasherTest {
-
-    @Before
-    public void createDefaultObjects() {
-        hasherBuilder = new HasherBuilder();
-        testWord = "This is a test";
-    }
+public class HasherBuilderTest {
 
     @Test
-    public void testAlgoChangeFailure() {
-        Hasher hasher1 = hasherBuilder.digest("SHA-256").build();
-        Hasher hasher2 = hasherBuilder.digest("SHA-512").build();
-
-        hashersShouldBehaveDifferently(hasher1, hasher2);
+    public void testValuesAreReused() {
+        AbstractSaltedHasher hasher = (AbstractSaltedHasher) new HasherBuilder().saltSize(5).digest("blah").charSet("UTF-8").iterations(9).build();
+        TestCase.assertEquals(5, hasher.saltSize);
+        TestCase.assertEquals(9, hasher.iterations);
+        TestCase.assertEquals("blah", hasher.digest);
+        TestCase.assertEquals(Charset.forName("UTF-8"), hasher.charset);
     }
-
-    @Test
-    public void testCharsetChangeFailure() {
-        Hasher hasher1 = hasherBuilder.charSet("UTF-8").build();
-        Hasher hasher2 = hasherBuilder.charSet("UTF-16LE").build();
-
-        hashersShouldBehaveDifferently(hasher1, hasher2);
-    }
-
 }
