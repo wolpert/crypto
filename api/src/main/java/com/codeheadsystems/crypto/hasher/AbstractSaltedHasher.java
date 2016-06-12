@@ -18,11 +18,11 @@ public abstract class AbstractSaltedHasher<T> implements Hasher {
     protected final Charset charset;
     protected final ThreadLocal<T> digesterThreadLocal = new ThreadLocal<>();
 
-    public AbstractSaltedHasher(final String digest, final int saltSize, final int iterations, final Charset charset) {
-        this.digest = digest;
-        this.saltSize = saltSize;
-        this.iterations = iterations;
-        this.charset = charset;
+    public AbstractSaltedHasher(final HasherConfiguration hasherConfiguration) {
+        this.digest = hasherConfiguration.digest;
+        this.saltSize = hasherConfiguration.saltSize;
+        this.iterations = hasherConfiguration.iterations;
+        this.charset = hasherConfiguration.charset;
     }
 
     @Override

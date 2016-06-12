@@ -14,7 +14,7 @@ public class OWASPHashImplTest extends AbstractHasherTest {
 
     @Before
     public void createDefaultObjects() {
-        hasherBuilder = new HasherBuilder().digest("PBKDF2WithHmacSHA512");
+        hasherBuilder = new HasherBuilder().hasherProviderClass(HasherProviderImpl.class).digest("PBKDF2WithHmacSHA512");
         testWord = "This is a test";
     }
 

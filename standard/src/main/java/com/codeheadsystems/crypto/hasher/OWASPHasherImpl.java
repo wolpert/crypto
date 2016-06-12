@@ -2,7 +2,6 @@ package com.codeheadsystems.crypto.hasher;
 
 import com.codeheadsystems.crypto.Hasher;
 
-import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
@@ -17,11 +16,11 @@ import javax.crypto.spec.PBEKeySpec;
  */
 public class OWASPHasherImpl extends AbstractSaltedHasher<SecretKeyFactory> implements Hasher {
 
-    protected int keySize = 256;
+    protected int keySize;
 
-    public OWASPHasherImpl(String digest, int saltSize, int iterations, Charset charset, int keySize) {
-        super(digest, saltSize, iterations, charset);
-        this.keySize = keySize;
+    public OWASPHasherImpl(final HasherConfiguration hasherConfiguration) {
+        super(hasherConfiguration);
+        this.keySize = hasherConfiguration.keySize;
     }
 
     public SecretKeyFactory getSecretKeyFactory() {

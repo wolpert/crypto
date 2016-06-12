@@ -14,17 +14,17 @@ import static junit.framework.TestCase.assertTrue;
 /**
  * BSD-Style License 2016
  */
-public class StandardHasherImplTest extends AbstractHasherTest {
+public class Jdk7CompatHasherTest extends AbstractHasherTest {
 
     @Before
     public void createDefaultObjects() {
-        hasherBuilder = new HasherBuilder();
+        hasherBuilder = new HasherBuilder().hasherProviderClass(HasherProviderImpl.class);
         testWord = "This is a test";
     }
 
     @Test
     public void testImplSaltWorks() {
-        StandardHasherImpl hasher = new StandardHasherImpl("MD5", 2, 1, Charset.defaultCharset());
+        Jdk7CompatHasher hasher = new Jdk7CompatHasher(new HasherConfiguration("MD5", 2, 1, Charset.defaultCharset(), 0));
 
         byte[] hashedValue = hasher.generateHash("This is NOT a test");
         byte[] salt = hasher.getSalt(hashedValue);

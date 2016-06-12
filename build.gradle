@@ -33,5 +33,25 @@ task clean(type: Delete) {
 }
 
 project(':api') {
+}
 
+project(':standard') {
+    dependencies {
+        compile project(":api")
+        testCompile project(":api").sourceSets.test.output
+    }
+}
+
+project(':jdk7compat') {
+    dependencies {
+        compile project(":api")
+        testCompile project(":api").sourceSets.test.output
+    }
+}
+
+project(':paranoid') {
+    dependencies {
+        compile project(":api")
+        testCompile project(":api").sourceSets.test.output
+    }
 }

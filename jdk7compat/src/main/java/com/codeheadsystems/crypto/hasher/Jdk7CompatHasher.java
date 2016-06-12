@@ -2,7 +2,6 @@ package com.codeheadsystems.crypto.hasher;
 
 import com.codeheadsystems.crypto.Hasher;
 
-import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -11,10 +10,10 @@ import java.security.NoSuchAlgorithmException;
  * <p/>
  * BSD-Style License 2016
  */
-public class StandardHasherImpl extends AbstractSaltedHasher<MessageDigest> implements Hasher {
+public class Jdk7CompatHasher extends AbstractSaltedHasher<MessageDigest> implements Hasher {
 
-    public StandardHasherImpl(String digest, int saltSize, int iterations, Charset charset) {
-        super(digest, saltSize, iterations, charset);
+    public Jdk7CompatHasher(final HasherConfiguration hasherConfiguration) {
+        super(hasherConfiguration);
     }
 
     public MessageDigest getMessageDigest() {

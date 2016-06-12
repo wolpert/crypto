@@ -2,6 +2,8 @@ package com.codeheadsystems.crypto.hasher;
 
 import com.codeheadsystems.crypto.Hasher;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 
 /**
@@ -14,6 +16,12 @@ public class HasherBuilder {
     private int saltSize = 2;
     private int iterations = 1024;
     private int keySize = 256;
+    private Class<? extends HasherProvider> hasherProviderClass;
+
+    public HasherBuilder hasherProviderClass(Class<? extends HasherProvider> hasherProviderClass) {
+        this.hasherProviderClass = hasherProviderClass;
+        return this;
+    }
 
     public HasherBuilder digest(String digest) {
         this.digest = digest;
@@ -40,12 +48,19 @@ public class HasherBuilder {
         return this;
     }
 
+    protected HasherProvider getHasherProvider() {
+        try {
+            Constructor<? extends HasherProvider> constructor = hasherProviderClass.getConstructor();
+            return constructor.newInstance();
+        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new HasherException("Unable to constructor hasher from provider " + hasherProviderClass, e);
+        }
+    }
+
     public Hasher build() {
         Charset usableCharset = Charset.forName(charSet);
-        if (digest.startsWith("PBK")) { // sucky?
-            return new OWASPHasherImpl(digest, saltSize, iterations, usableCharset, keySize);
-        } else {
-            return new StandardHasherImpl(digest, saltSize, iterations, usableCharset);
-        }
+        HasherConfiguration hasherConfiguration = new HasherConfiguration(digest, saltSize, iterations, usableCharset, keySize);
+        HasherProvider hasherProvider = getHasherProvider();
+        return hasherProvider.getHasher(hasherConfiguration);
     }
 }
