@@ -50,8 +50,14 @@ project(':jdk7compat') {
 }
 
 project(':paranoid') {
+
+    ext {
+        bouncyVersion = "1.54"
+    }
+
     dependencies {
         compile project(":api")
+        compile "org.bouncycastle:bcprov-jdk15on:${bouncyVersion}"
         testCompile project(":api").sourceSets.test.output
     }
 }
