@@ -1,6 +1,7 @@
 package com.codeheadsystems.crypto.hasher;
 
 import com.codeheadsystems.crypto.Hasher;
+import com.codeheadsystems.crypto.Utilities;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,7 +13,6 @@ import java.nio.charset.Charset;
 public class HasherBuilder {
 
     private String digest = "SHA-256";
-    private String charSet = "UTF-16LE";
     private int saltSize = 2;
     private int iterations = 1024;
     private int keySize = 256;
@@ -30,11 +30,6 @@ public class HasherBuilder {
 
     public HasherBuilder saltSize(int saltSize) {
         this.saltSize = saltSize;
-        return this;
-    }
-
-    public HasherBuilder charSet(String charSet) {
-        this.charSet = charSet;
         return this;
     }
 
@@ -58,7 +53,7 @@ public class HasherBuilder {
     }
 
     public Hasher build() {
-        Charset usableCharset = Charset.forName(charSet);
+        Charset usableCharset = Utilities.getCharset();
         HasherConfiguration hasherConfiguration = new HasherConfiguration(digest, saltSize, iterations, usableCharset, keySize);
         HasherProvider hasherProvider = getHasherProvider();
         return hasherProvider.getHasher(hasherConfiguration);

@@ -1,5 +1,7 @@
 package com.codeheadsystems.crypto;
 
+import org.junit.Test;
+
 import static junit.framework.TestCase.assertNotNull;
 
 /**
@@ -7,7 +9,7 @@ import static junit.framework.TestCase.assertNotNull;
  */
 public class HasherFactoryTest {
 
-    //@Test
+    @Test
     public void testGetUsableHasher() {
         assertNotNull(new HasherFactory().hasher());
     }

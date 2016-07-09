@@ -24,13 +24,4 @@ public class ParanoidHasherTest extends AbstractHasherTest {
         hashersShouldBehaveDifferently(hasher1, hasher2);
     }
 
-    @Test
-    public void testCharsetChangeDoesFail() {
-        Hasher hasher1 = hasherBuilder.charSet("UTF-8").build();
-        Hasher hasher2 = hasherBuilder.charSet("UTF-16LE").build();
-
-        hashersShouldBehaveDifferently(hasher1, hasher2);
-    }
-
-
 }

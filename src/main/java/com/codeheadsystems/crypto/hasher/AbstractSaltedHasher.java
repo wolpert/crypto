@@ -2,6 +2,9 @@ package com.codeheadsystems.crypto.hasher;
 
 import com.codeheadsystems.crypto.Hasher;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.charset.Charset;
 
 import static com.codeheadsystems.crypto.Utilities.add;
@@ -11,6 +14,8 @@ import static com.codeheadsystems.crypto.Utilities.randomBytes;
  * BSD-Style License 2016
  */
 public abstract class AbstractSaltedHasher<T> implements Hasher {
+
+    protected static Logger logger = LoggerFactory.getLogger(AbstractSaltedHasher.class);
 
     protected final String digest;
     protected final int saltSize;
@@ -23,6 +28,7 @@ public abstract class AbstractSaltedHasher<T> implements Hasher {
         this.saltSize = hasherConfiguration.saltSize;
         this.iterations = hasherConfiguration.iterations;
         this.charset = hasherConfiguration.charset;
+        logger.info("constructor({},{},{},{},{})", digest, saltSize, iterations, charset, this.getClass());
     }
 
     @Override
