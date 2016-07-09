@@ -1,1 +1,0 @@
-include ':api', ':jdk7compat', ':standard', ':paranoid'
