@@ -12,7 +12,7 @@ import java.nio.charset.Charset;
  */
 public class HasherBuilder {
 
-    private String digest = "SHA-256";
+    private String digest = "SKEIN-1024-1024";
     private int saltSize = 2;
     private int iterations = 1024;
     private int keySize = 256;

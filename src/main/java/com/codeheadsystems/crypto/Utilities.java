@@ -16,11 +16,29 @@ public class Utilities {
         return random;
     }
 
+    public static byte[] reduce(byte[] bytes, int length) {
+        byte[] finalBytes = new byte[length];
+        System.arraycopy(bytes,0, finalBytes, 0, length );
+        return finalBytes;
+    }
+
     public static byte[] add(byte[] a1, byte[] a2) {
         byte[] result = new byte[a1.length + a2.length];
         System.arraycopy(a1, 0, result, 0, a1.length);
         System.arraycopy(a2, 0, result, a1.length, a2.length);
         return result;
+    }
+
+    public static boolean isSame(byte[] a1, byte[] a2) {
+        if (a1 == null || a2 == null || a1.length != a2.length) {
+            return false;
+        }
+        for (int i = 0; i < a1.length; i++) {
+            if (a1[i] != a2[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static byte[] randomBytes(int size) {

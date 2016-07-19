@@ -4,6 +4,7 @@ import com.codeheadsystems.crypto.Hasher;
 
 import org.junit.Test;
 
+import static com.codeheadsystems.crypto.Utilities.isSame;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
@@ -19,7 +20,7 @@ public abstract class AbstractHasherTest {
     public void testStandardUsage() {
         Hasher hasher = hasherBuilder.build();
 
-        byte[] hashedValue = hasher.generateHash(testWord);
+        HashHolder hashedValue = hasher.generateHash(testWord);
         assertTrue(hasher.isSame(hashedValue, testWord));
         assertFalse(hasher.isSame(hashedValue, testWord + "x"));
     }
@@ -47,12 +48,8 @@ public abstract class AbstractHasherTest {
     }
 
     protected void hashersShouldBehaveDifferently(Hasher hasher1, Hasher hasher2) {
-        byte[] hashedValue = hasher1.generateHash(testWord);
-        assertTrue(hasher1.isSame(hashedValue, testWord));
-        assertFalse(hasher2.isSame(hashedValue, testWord));
-
-        hashedValue = hasher2.generateHash(testWord);
-        assertTrue(hasher2.isSame(hashedValue, testWord));
-        assertFalse(hasher1.isSame(hashedValue, testWord));
+        HashHolder hashedValue1 = hasher1.generateHash(testWord);
+        HashHolder hashedValue2 = hasher2.generateHash(testWord);
+        assertFalse(isSame(hashedValue1.getHash(), hashedValue2.getHash()));
     }
 }

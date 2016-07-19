@@ -1,13 +1,13 @@
 package com.codeheadsystems.crypto.hasher;
 
 import com.codeheadsystems.crypto.Hasher;
+import com.codeheadsystems.crypto.Utilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
 
-import static com.codeheadsystems.crypto.Utilities.add;
 import static com.codeheadsystems.crypto.Utilities.randomBytes;
 
 /**
@@ -40,43 +40,25 @@ public abstract class AbstractSaltedHasher<T> implements Hasher {
         return randomBytes(saltSize);
     }
 
-    public byte[] getSalt(byte[] hashedValue) {
-        byte[] salt = new byte[saltSize];
-        System.arraycopy(hashedValue, 0, salt, 0, saltSize);
-        return salt;
-    }
-
     protected byte[] getBytes(String hashedValue) {
         return hashedValue.getBytes(charset);
     }
 
     @Override
-    public boolean isSame(byte[] hashedString, String unhashedString) {
-        byte[] salt = getSalt(hashedString);
-        byte[] newlyHashedString = generateHash(unhashedString, salt);
-        return isSame(hashedString, newlyHashedString);
+    public boolean isSame(HashHolder hashedString, String unhashedString) {
+        HashHolder newlyHashedString = generateHash(unhashedString, hashedString.getSalt());
+        return Utilities.isSame(hashedString.getHash(), newlyHashedString.getHash());
     }
 
-    public boolean isSame(byte[] a1, byte[] a2) {
-        if (a1 == null || a2 == null || a1.length != a2.length) {
-            return false;
-        }
-        for (int i = 0; i < a1.length; i++) {
-            if (a1[i] != a2[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     @Override
-    public byte[] generateHash(String unhashedString) {
+    public HashHolder generateHash(String unhashedString) {
         return generateHash(unhashedString, getSalt());
     }
 
-    public byte[] generateHash(String unhashedString, byte[] salt) {
-        byte[] hashingBytes = internalGenerateHash(unhashedString, salt);
-        return add(salt, hashingBytes);
+    @Override
+    public HashHolder generateHash(String unhashedString, byte[] salt) {
+        return new HashHolder(salt, internalGenerateHash(unhashedString, salt));
     }
 
     abstract protected byte[] internalGenerateHash(String unhashedString, byte[] salt);

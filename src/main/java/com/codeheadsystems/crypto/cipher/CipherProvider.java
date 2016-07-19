@@ -1,12 +1,10 @@
 package com.codeheadsystems.crypto.cipher;
 
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
-import com.codeheadsystems.crypto.password.SecretKeyWrapper;
 
-import java.security.NoSuchAlgorithmException;
+import org.bouncycastle.crypto.BlockCipher;
+import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
@@ -14,7 +12,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public interface CipherProvider {
 
-    public Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException;
+    PaddedBufferedBlockCipher getCipher();
 
-    public SecretKeySpec getSecret(SecretKeyWrapper secretKeyWrapper) throws SecretKeyExpiredException;
+    byte[] getRandomIV();
 }

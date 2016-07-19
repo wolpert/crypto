@@ -1,37 +1,25 @@
 package com.codeheadsystems.crypto.cipher;
 
-import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
-import com.codeheadsystems.crypto.password.SecretKeyWrapper;
+import com.codeheadsystems.crypto.Utilities;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import java.security.NoSuchAlgorithmException;
-import java.security.Security;
-
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
+import org.bouncycastle.crypto.engines.AESFastEngine;
+import org.bouncycastle.crypto.modes.CBCBlockCipher;
+import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 
 /**
  * BSD-Style License 2016
  */
 public class ParanoidCipherProvider implements CipherProvider {
 
-    private final static String ALGORITHM = "AES/CBC/PKCS7Padding";
+    private final static int BLOCK_LENGTH = 16;
 
-    public ParanoidCipherProvider() {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
+    @Override
+    public PaddedBufferedBlockCipher getCipher() {
+        return new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));
     }
 
     @Override
-    public Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException {
-        return Cipher.getInstance(ALGORITHM);
-    }
-
-    @Override
-    public SecretKeySpec getSecret(SecretKeyWrapper secretKeyWrapper) throws SecretKeyExpiredException {
-        return new SecretKeySpec(secretKeyWrapper.getSecretKey().getEncoded(), "AES");
+    public byte[] getRandomIV() {
+        return Utilities.randomBytes(BLOCK_LENGTH);
     }
 }

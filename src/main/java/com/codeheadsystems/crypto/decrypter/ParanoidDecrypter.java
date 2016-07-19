@@ -2,33 +2,27 @@ package com.codeheadsystems.crypto.decrypter;
 
 import com.codeheadsystems.crypto.CryptoException;
 import com.codeheadsystems.crypto.Decrypter;
-import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.cipher.EncryptedByteHolder;
 import com.codeheadsystems.crypto.cipher.ParanoidCipherProvider;
+import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
-import com.codeheadsystems.crypto.password.SecretKeyWrapper;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
+import org.bouncycastle.crypto.params.ParametersWithIV;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
-
-import static com.codeheadsystems.crypto.Utilities.*;
+import static com.codeheadsystems.crypto.Utilities.getCharset;
+import static com.codeheadsystems.crypto.Utilities.reduce;
 
 /**
  * BSD-Style License 2016
  */
 public class ParanoidDecrypter extends ParanoidCipherProvider implements Decrypter {
 
-    private final SecretKeyWrapper secretKeyWrapper;
+    private final KeyParameterWrapper keyParameterWrapper;
 
-    public ParanoidDecrypter(SecretKeyWrapper secretKeyWrapper) {
-        this.secretKeyWrapper = secretKeyWrapper;
+    public ParanoidDecrypter(KeyParameterWrapper keyParameterWrapper) {
+        this.keyParameterWrapper = keyParameterWrapper;
     }
 
     @Override
@@ -39,11 +33,18 @@ public class ParanoidDecrypter extends ParanoidCipherProvider implements Decrypt
     @Override
     public byte[] decryptBytes(EncryptedByteHolder encryptedBytes) throws CryptoException, SecretKeyExpiredException {
         try {
-            Cipher cipher = getCipher();
-            cipher.init(Cipher.DECRYPT_MODE, getSecret(secretKeyWrapper), new IvParameterSpec(encryptedBytes.getIv()));
-            return cipher.doFinal(encryptedBytes.getEncryptedBytes());
-        } catch (NoSuchAlgorithmException | InvalidKeyException | InvalidAlgorithmParameterException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException e) {
+
+            PaddedBufferedBlockCipher cipher = getCipher();
+            ParametersWithIV keyWithIv = new ParametersWithIV(keyParameterWrapper.getKeyParameter(), encryptedBytes.getIv());
+            cipher.init(false, keyWithIv);
+            byte[] cipherBytes = encryptedBytes.getEncryptedBytes();
+            byte[] decryptedBytes = new byte[cipher.getOutputSize(cipherBytes.length)];
+            final int length1 = cipher.processBytes(cipherBytes, 0, cipherBytes.length, decryptedBytes, 0);
+            final int length2 = cipher.doFinal(decryptedBytes, length1);
+            return reduce(decryptedBytes, length1 + length2);
+        } catch (InvalidCipherTextException e) {
             throw new CryptoException("Unable to decrypt bytes due to " + e.getLocalizedMessage(), e);
+
         }
     }
 }
