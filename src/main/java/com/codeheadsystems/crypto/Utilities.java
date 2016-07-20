@@ -4,6 +4,7 @@ import org.bouncycastle.util.encoders.Base64;
 
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
+import java.util.Date;
 
 /**
  * BSD-Style License 2016

@@ -20,6 +20,7 @@ public class EncryptedByteHolder implements Serializable {
     protected byte[] iv;
 
     public EncryptedByteHolder(byte[] encryptedBytes, byte[] iv) {
+        logger.debug("EncryptedByteHolder()");
         this.encryptedBytes = encryptedBytes;
         this.iv = iv;
     }

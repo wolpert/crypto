@@ -5,6 +5,8 @@ import com.codeheadsystems.crypto.hasher.HasherBuilder;
 import com.codeheadsystems.crypto.hasher.ParanoidHasherProviderImpl;
 
 import org.bouncycastle.crypto.params.KeyParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -15,6 +17,8 @@ import static com.codeheadsystems.crypto.Utilities.stringToBytes;
  * BSD-Style License 2016
  */
 public class KeyParameterFactory {
+
+    private static final Logger logger = LoggerFactory.getLogger(KeyParameterFactory.class);
 
     private final int iterationCount;
 
@@ -42,6 +46,7 @@ public class KeyParameterFactory {
      * @throws InvalidKeySpecException
      */
     public KeyParameterWrapper generate(String password, byte[] salt) {
+        logger.debug("generate()");
         byte[] hashedPassword = new HasherBuilder()
                 .hasherProviderClass(ParanoidHasherProviderImpl.class)
                 .digest("SKEIN-512-256")

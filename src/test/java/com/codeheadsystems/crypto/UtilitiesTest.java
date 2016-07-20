@@ -2,6 +2,7 @@ package com.codeheadsystems.crypto;
 
 import org.junit.Test;
 
+import static com.codeheadsystems.crypto.Utilities.*;
 import static junit.framework.TestCase.assertEquals;
 
 /**
@@ -13,7 +14,7 @@ public class UtilitiesTest {
     public void testAddWorks() {
         byte[] a1 = {0, 1, 2};
         byte[] a2 = {5, 6};
-        byte[] result = Utilities.add(a1, a2);
+        byte[] result = add(a1, a2);
         assertEquals(result[0], a1[0]);
         assertEquals(result[1], a1[1]);
         assertEquals(result[2], a1[2]);
@@ -23,7 +24,7 @@ public class UtilitiesTest {
 
     @Test
     public void testGetRandomBites() {
-        byte[] array = Utilities.randomBytes(10);
+        byte[] array = randomBytes(10);
         assertEquals(10, array.length);
     }
 }

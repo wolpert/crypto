@@ -8,6 +8,8 @@ import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.params.ParametersWithIV;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.codeheadsystems.crypto.Utilities.getCharset;
 import static com.codeheadsystems.crypto.Utilities.reduce;
@@ -16,6 +18,8 @@ import static com.codeheadsystems.crypto.Utilities.reduce;
  * BSD-Style License 2016
  */
 public class ParanoidEncrypter extends ParanoidCipherProvider implements Encrypter {
+
+    private final static Logger logger = LoggerFactory.getLogger(ParanoidEncrypter.class);
 
     public ParanoidEncrypter(KeyParameterWrapper keyParameterWrapper) {
         super(keyParameterWrapper);
@@ -28,6 +32,7 @@ public class ParanoidEncrypter extends ParanoidCipherProvider implements Encrypt
 
     @Override
     public EncryptedByteHolder encryptBytes(byte[] bytes) throws CryptoException, SecretKeyExpiredException {
+        logger.debug("encryptBytes()");
         try {
             PaddedBufferedBlockCipher cipher = getCipher();
             byte[] iv = getRandomIV();

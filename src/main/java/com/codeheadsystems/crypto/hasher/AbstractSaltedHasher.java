@@ -24,6 +24,7 @@ public abstract class AbstractSaltedHasher<T> implements Hasher {
     protected final ThreadLocal<T> digesterThreadLocal = new ThreadLocal<>();
 
     public AbstractSaltedHasher(final HasherConfiguration hasherConfiguration) {
+        logger.debug("AbstractSaltedHasher()");
         this.digest = hasherConfiguration.digest;
         this.saltSize = hasherConfiguration.saltSize;
         this.iterations = hasherConfiguration.iterations;
@@ -58,6 +59,7 @@ public abstract class AbstractSaltedHasher<T> implements Hasher {
 
     @Override
     public HashHolder generateHash(String unhashedString, byte[] salt) {
+        logger.debug("generateHash()");
         return new HashHolder(salt, internalGenerateHash(unhashedString, salt));
     }
 

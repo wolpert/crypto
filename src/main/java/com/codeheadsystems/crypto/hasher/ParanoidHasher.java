@@ -2,6 +2,9 @@ package com.codeheadsystems.crypto.hasher;
 
 import com.codeheadsystems.crypto.Hasher;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -10,11 +13,14 @@ import java.security.NoSuchAlgorithmException;
  */
 public class ParanoidHasher extends AbstractSaltedHasher<MessageDigest> implements Hasher {
 
+    private static final Logger logger = LoggerFactory.getLogger(ParanoidHasher.class);
+
     public ParanoidHasher(HasherConfiguration hasherConfiguration) {
         super(hasherConfiguration);
     }
 
     public MessageDigest getMessageDigest() {
+        logger.debug("getMessageDigest()");
         MessageDigest result = digesterThreadLocal.get();
         if (result == null) {
             try {
@@ -29,6 +35,7 @@ public class ParanoidHasher extends AbstractSaltedHasher<MessageDigest> implemen
 
     @Override
     protected byte[] internalGenerateHash(String unhashedString, byte[] salt) {
+        logger.debug("internalGenerateHash(,)");
         byte[] hashingBytes = getBytes(unhashedString);
         MessageDigest messageDigest = getMessageDigest();
         try {

@@ -5,8 +5,6 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import static com.codeheadsystems.crypto.Utilities.bytesToString;
 
 /**
- * Created by wolpert on 7/15/16.
- * <p/>
  * When you read the password from the user, generate this wrapper right away and do not store
  * the password. The wrapper will (eventually) have the ability to expire requiring the user to
  * enter in their password again.
