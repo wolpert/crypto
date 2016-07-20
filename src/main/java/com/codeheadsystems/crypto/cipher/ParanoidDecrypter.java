@@ -2,8 +2,6 @@ package com.codeheadsystems.crypto.cipher;
 
 import com.codeheadsystems.crypto.CryptoException;
 import com.codeheadsystems.crypto.Decrypter;
-import com.codeheadsystems.crypto.cipher.EncryptedByteHolder;
-import com.codeheadsystems.crypto.cipher.ParanoidCipherProvider;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 
@@ -19,10 +17,9 @@ import static com.codeheadsystems.crypto.Utilities.reduce;
  */
 public class ParanoidDecrypter extends ParanoidCipherProvider implements Decrypter {
 
-    private final KeyParameterWrapper keyParameterWrapper;
 
     public ParanoidDecrypter(KeyParameterWrapper keyParameterWrapper) {
-        this.keyParameterWrapper = keyParameterWrapper;
+        super(keyParameterWrapper);
     }
 
     @Override

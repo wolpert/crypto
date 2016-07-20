@@ -16,11 +16,14 @@ import static com.codeheadsystems.crypto.Utilities.stringToBytes;
  */
 public class KeyParameterFactory {
 
-    private int iterationCount = 65536;
+    private final int iterationCount;
 
-    public KeyParameterFactory iterationCount(int iterationCount) {
+    public KeyParameterFactory() {
+        iterationCount = 65536;
+    }
+
+    public KeyParameterFactory(int iterationCount) {
         this.iterationCount = iterationCount;
-        return this;
     }
 
     public KeyParameterWrapper generate(String password) {
