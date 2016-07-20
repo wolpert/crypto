@@ -14,7 +14,9 @@ encrypted content. This does not handle trust, certs, or other cryptographic
 features that are needed for a robust solution.
 
 Passwords are hashed with SKEIN-512-256 hashing algo to generate the 256-bit key, which is
-used with the AES crypto library. CBC block chaining, and PKCS7 padding support.
+used with the AES crypto library. [CBC](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_.28CBC.29)
+for block chaining, and PKCS7 padding support. (Strings
+converted with UTF-16LE charset)
 
 The Hashing is done using the JCE library with Bouncy Castle provider support. The
 encryption is done directly with Bouncy Castle libraries. (May remove JCE altogether
