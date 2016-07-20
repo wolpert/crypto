@@ -36,6 +36,24 @@ public class RoundTripCryptoTest {
         assertEquals(clearText, decryptedText);
     }
 
+    @Test
+    public void testRoundTripSaltAsString() throws SecretKeyExpiredException {
+        String password = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
+        String clearText = "This is not a test... wait... it is...";
+        KeyParameterFactory keyParameterFactory = new KeyParameterFactory();
+        KeyParameterWrapper encryptKeyParameterWrapper = keyParameterFactory.generate(password);
+        Encrypter encrypter = new ParanoidEncrypter(encryptKeyParameterWrapper);
+        EncryptedByteHolder encryptBytes = encrypter.encryptBytes(clearText);
+        assertNotEquals(clearText, new String(encryptBytes.getEncryptedBytes(), getCharset()));
+        String salt = encryptKeyParameterWrapper.getSaltAsString();
+
+        // rebuild the keyParams
+        Decrypter decrypter = new ParanoidDecrypter(keyParameterFactory.generate(password, salt));
+        String decryptedText = decrypter.decryptText(encryptBytes);
+        assertEquals(clearText.length(), decryptedText.length());
+        assertEquals(clearText, decryptedText);
+    }
+
     @Test(expected = SecretKeyExpiredException.class)
     public void testRoundTripFailureFromExpiredPassword() throws SecretKeyExpiredException {
         String password = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
