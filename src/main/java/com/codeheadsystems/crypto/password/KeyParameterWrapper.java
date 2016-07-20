@@ -2,6 +2,8 @@ package com.codeheadsystems.crypto.password;
 
 import org.bouncycastle.crypto.params.KeyParameter;
 
+import static com.codeheadsystems.crypto.Utilities.bytesToString;
+
 /**
  * Created by wolpert on 7/15/16.
  */
@@ -22,7 +24,12 @@ public class KeyParameterWrapper {
         return keyParameter;
     }
 
-    public byte[] salt() {
+    public byte[] getSalt() {
         return salt;
+    }
+
+
+    public String getSaltAsString() {
+        return bytesToString(salt);
     }
 }

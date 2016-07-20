@@ -1,5 +1,7 @@
 package com.codeheadsystems.crypto;
 
+import org.bouncycastle.util.encoders.Base64;
+
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
 
@@ -18,7 +20,7 @@ public class Utilities {
 
     public static byte[] reduce(byte[] bytes, int length) {
         byte[] finalBytes = new byte[length];
-        System.arraycopy(bytes,0, finalBytes, 0, length );
+        System.arraycopy(bytes, 0, finalBytes, 0, length);
         return finalBytes;
     }
 
@@ -49,5 +51,21 @@ public class Utilities {
 
     public static Charset getCharset() {
         return charset;
+    }
+
+    public static String bytesToString(byte[] bytes) {
+        if (bytes != null) {
+            return Base64.toBase64String(bytes);
+        } else {
+            return "null";
+        }
+    }
+
+    public static byte[] stringToBytes(String string) {
+        if (string == null || string.equals("null")) {
+            return null;
+        } else {
+            return Base64.decode(string);
+        }
     }
 }

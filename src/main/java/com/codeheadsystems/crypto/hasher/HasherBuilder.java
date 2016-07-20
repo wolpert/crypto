@@ -13,7 +13,7 @@ import java.nio.charset.Charset;
 public class HasherBuilder {
 
     private String digest = "SKEIN-1024-1024";
-    private int saltSize = 2;
+    private int saltSize = 20;
     private int iterations = 1024;
     private Class<? extends HasherProvider> hasherProviderClass;
 

@@ -1,4 +1,4 @@
-package com.codeheadsystems.crypto.encrypter;
+package com.codeheadsystems.crypto.cipher;
 
 import com.codeheadsystems.crypto.CryptoException;
 import com.codeheadsystems.crypto.Encrypter;
