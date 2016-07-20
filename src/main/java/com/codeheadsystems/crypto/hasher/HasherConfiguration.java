@@ -11,14 +11,12 @@ public class HasherConfiguration {
     protected int saltSize;
     protected int iterations;
     protected Charset charset;
-    protected int keySize;
 
-    public HasherConfiguration(String digest, int saltSize, int iterations, Charset charset, int keySize) {
+    public HasherConfiguration(String digest, int saltSize, int iterations, Charset charset) {
         this.digest = digest;
         this.saltSize = saltSize;
         this.iterations = iterations;
         this.charset = charset;
-        this.keySize = keySize;
     }
 
     public String getDigest() {
@@ -51,13 +49,5 @@ public class HasherConfiguration {
 
     public void setCharset(Charset charset) {
         this.charset = charset;
-    }
-
-    public int getKeySize() {
-        return keySize;
-    }
-
-    public void setKeySize(int keySize) {
-        this.keySize = keySize;
     }
 }

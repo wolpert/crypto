@@ -40,7 +40,6 @@ public class ParanoidHasher extends AbstractSaltedHasher<MessageDigest> implemen
             messageDigest.reset();
         }
         return hashingBytes;
-
     }
 
 }

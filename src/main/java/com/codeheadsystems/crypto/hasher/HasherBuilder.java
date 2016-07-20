@@ -15,7 +15,6 @@ public class HasherBuilder {
     private String digest = "SKEIN-1024-1024";
     private int saltSize = 2;
     private int iterations = 1024;
-    private int keySize = 256;
     private Class<? extends HasherProvider> hasherProviderClass;
 
     public HasherBuilder hasherProviderClass(Class<? extends HasherProvider> hasherProviderClass) {
@@ -38,11 +37,6 @@ public class HasherBuilder {
         return this;
     }
 
-    public HasherBuilder keySize(int keySize) {
-        this.keySize = keySize;
-        return this;
-    }
-
     protected HasherProvider getHasherProvider() {
         try {
             Constructor<? extends HasherProvider> constructor = hasherProviderClass.getConstructor();
@@ -54,7 +48,7 @@ public class HasherBuilder {
 
     public Hasher build() {
         Charset usableCharset = Utilities.getCharset();
-        HasherConfiguration hasherConfiguration = new HasherConfiguration(digest, saltSize, iterations, usableCharset, keySize);
+        HasherConfiguration hasherConfiguration = new HasherConfiguration(digest, saltSize, iterations, usableCharset);
         HasherProvider hasherProvider = getHasherProvider();
         return hasherProvider.getHasher(hasherConfiguration);
     }
