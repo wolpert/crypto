@@ -39,9 +39,9 @@ public class ParanoidHasher extends AbstractSaltedHasher<MessageDigest> implemen
         byte[] hashingBytes = getBytes(unhashedString);
         MessageDigest messageDigest = getMessageDigest();
         try {
-            messageDigest.update(salt);
             for (int i = 0; i < iterations; i++) {
-                hashingBytes = messageDigest.digest(hashingBytes);
+                messageDigest.update(salt);
+                hashingBytes = messageDigest.digest(hashingBytes); // should reset the digest
             }
         } finally {
             messageDigest.reset();
