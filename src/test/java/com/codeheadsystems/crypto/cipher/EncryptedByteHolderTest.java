@@ -1,5 +1,9 @@
 package com.codeheadsystems.crypto.cipher;
 
+import com.codeheadsystems.crypto.Utilities;
+import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
+
+import org.junit.Before;
 import org.junit.Test;
 
 import static com.codeheadsystems.crypto.Utilities.randomBytes;
@@ -9,6 +13,11 @@ import static junit.framework.TestCase.assertEquals;
  * Created by wolpert on 7/19/16.
  */
 public class EncryptedByteHolderTest {
+
+    @Before
+    public void setRandomFactory() {
+        Utilities.setRandomProvider(new UnsecureRandomProvider());
+    }
 
     @Test
     public void testTextRoundTrip() {

@@ -6,7 +6,9 @@ import com.codeheadsystems.crypto.cipher.ParanoidEncrypter;
 import com.codeheadsystems.crypto.password.KeyParameterFactory;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
+import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static com.codeheadsystems.crypto.Utilities.getCharset;
@@ -17,6 +19,11 @@ import static org.junit.Assert.assertNotEquals;
  * BSD-Style License 2016
  */
 public class RoundTripCryptoTest {
+
+    @Before
+    public void setRandomFactory() {
+        Utilities.setRandomProvider(new UnsecureRandomProvider());
+    }
 
     @Test
     public void testRoundTrip() throws SecretKeyExpiredException {

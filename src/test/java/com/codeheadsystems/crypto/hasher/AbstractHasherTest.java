@@ -1,7 +1,10 @@
 package com.codeheadsystems.crypto.hasher;
 
 import com.codeheadsystems.crypto.Hasher;
+import com.codeheadsystems.crypto.Utilities;
+import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static com.codeheadsystems.crypto.Utilities.isSame;
@@ -15,6 +18,11 @@ public abstract class AbstractHasherTest {
 
     protected HasherBuilder hasherBuilder;
     protected String testWord;
+
+    @Before
+    public void setRandomFactory() {
+        Utilities.setRandomProvider(new UnsecureRandomProvider());
+    }
 
     @Test
     public void testStandardUsage() {

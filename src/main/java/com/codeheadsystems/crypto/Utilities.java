@@ -1,10 +1,14 @@
 package com.codeheadsystems.crypto;
 
+import com.codeheadsystems.crypto.random.RandomProvider;
+import com.codeheadsystems.crypto.random.SecureRandomProvider;
+
 import org.bouncycastle.util.encoders.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
-import java.security.SecureRandom;
-import java.util.Date;
+import java.util.Random;
 
 /**
  * BSD-Style License 2016
@@ -12,11 +16,36 @@ import java.util.Date;
 public class Utilities {
 
     private static final Charset charset = Charset.forName("UTF-16LE");
+    private static final Logger logger = LoggerFactory.getLogger(Utilities.class);
 
-    public static SecureRandom getRandom() {
-        SecureRandom random = new SecureRandom();
-        random.setSeed(random.generateSeed(16));
-        return random;
+    private static RandomProvider randomProvider;
+
+    public static synchronized RandomProvider getRandomProvider() {
+        if (randomProvider == null) {
+            randomProvider = new SecureRandomProvider();
+        }
+        return randomProvider;
+    }
+
+    public static synchronized void setRandomProvider(RandomProvider incomingRandomProvider) {
+        if (randomProvider == null) {
+            logger.warn("Manually setting the random provider: " + incomingRandomProvider);
+            randomProvider = incomingRandomProvider;
+        } else {
+            logger.error("Random provider already set. " + randomProvider + ":" + incomingRandomProvider);
+        }
+    }
+
+    public static Random getRandom() {
+        return getRandomProvider().getRandom();
+    }
+
+    /**
+     * Call this method once to validate the random provider is using the secure provider.
+     * @return
+     */
+    public static boolean isSecureRandomProvider() {
+        return getRandomProvider().getClass().equals(SecureRandomProvider.class);
     }
 
     public static byte[] reduce(byte[] bytes, int length) {

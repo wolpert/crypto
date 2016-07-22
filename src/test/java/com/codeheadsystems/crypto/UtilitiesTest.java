@@ -1,14 +1,31 @@
 package com.codeheadsystems.crypto;
 
+import com.codeheadsystems.crypto.random.SecureRandomProvider;
+import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
+
+import org.junit.Before;
 import org.junit.Test;
 
-import static com.codeheadsystems.crypto.Utilities.*;
+import static com.codeheadsystems.crypto.Utilities.add;
+import static com.codeheadsystems.crypto.Utilities.randomBytes;
 import static junit.framework.TestCase.assertEquals;
 
 /**
  * BSD-Style License 2016
  */
 public class UtilitiesTest {
+
+    @Before
+    public void setRandomFactory() {
+        Utilities.setRandomProvider(new UnsecureRandomProvider());
+    }
+
+    @Test
+    public void checkForFailureInResettingRandomProvider() {
+        Utilities.setRandomProvider(new SecureRandomProvider());
+        assertEquals(UnsecureRandomProvider.class, Utilities.getRandomProvider().getClass()); // Already set once via the before.
+        assertEquals(false, Utilities.isSecureRandomProvider());
+    }
 
     @Test
     public void testAddWorks() {
