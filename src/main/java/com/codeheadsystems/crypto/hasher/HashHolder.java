@@ -17,10 +17,6 @@ public class HashHolder {
         return salt;
     }
 
-    public void setSalt(byte[] salt) {
-        this.salt = salt;
-    }
-
     public byte[] getHash() {
         return hash;
     }

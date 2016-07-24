@@ -19,7 +19,7 @@ public class ParanoidHasher extends AbstractSaltedHasher<MessageDigest> implemen
         super(hasherConfiguration);
     }
 
-    public MessageDigest getMessageDigest() {
+    private MessageDigest getMessageDigest() {
         logger.debug("getMessageDigest()");
         MessageDigest result = digesterThreadLocal.get();
         if (result == null) {

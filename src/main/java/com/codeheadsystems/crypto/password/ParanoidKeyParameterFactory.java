@@ -16,17 +16,17 @@ import static com.codeheadsystems.crypto.Utilities.stringToBytes;
 /**
  * BSD-Style License 2016
  */
-public class KeyParameterFactory {
+public class ParanoidKeyParameterFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(KeyParameterFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParanoidKeyParameterFactory.class);
 
     private final int iterationCount;
 
-    public KeyParameterFactory() {
+    public ParanoidKeyParameterFactory() {
         iterationCount = 65536;
     }
 
-    public KeyParameterFactory(int iterationCount) {
+    public ParanoidKeyParameterFactory(int iterationCount) {
         this.iterationCount = iterationCount;
     }
 
