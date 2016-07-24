@@ -9,6 +9,7 @@ import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 public interface Encrypter {
 
     public EncryptedByteHolder encryptBytes(String text) throws CryptoException, SecretKeyExpiredException;
+
     public EncryptedByteHolder encryptBytes(byte[] bytes) throws CryptoException, SecretKeyExpiredException;
 
 }

@@ -1,5 +1,6 @@
 package com.codeheadsystems.crypto.password;
 
+import com.codeheadsystems.crypto.Hasher;
 import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.hasher.HasherBuilder;
 import com.codeheadsystems.crypto.hasher.ParanoidHasherProviderImpl;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Timer;
 
 import static com.codeheadsystems.crypto.Utilities.stringToBytes;
 
@@ -19,15 +21,14 @@ import static com.codeheadsystems.crypto.Utilities.stringToBytes;
 public class ParanoidKeyParameterFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ParanoidKeyParameterFactory.class);
+    private final int experiationInMins;
+    private final Hasher hasher;
+    private final Timer timer;
 
-    private final int iterationCount;
-
-    public ParanoidKeyParameterFactory() {
-        iterationCount = 65536;
-    }
-
-    public ParanoidKeyParameterFactory(int iterationCount) {
-        this.iterationCount = iterationCount;
+    private ParanoidKeyParameterFactory(int experiationInMins, Hasher hasher) {
+        this.experiationInMins = experiationInMins;
+        this.hasher = hasher;
+        this.timer = new Timer(true);
     }
 
     public KeyParameterWrapper generate(String password) {
@@ -36,6 +37,14 @@ public class ParanoidKeyParameterFactory {
 
     public KeyParameterWrapper generate(String password, String salt) {
         return generate(password, stringToBytes(salt));
+    }
+
+    protected ExpirationHandler generateExpirationHandler(KeyParameterWrapper keyParameterWrapper) {
+        if (experiationInMins > 0) {
+            return new StandardExpirationHandler(experiationInMins, timer, keyParameterWrapper);
+        } else {
+            return new NoopExpirationHandler();
+        }
     }
 
     /**
@@ -47,17 +56,35 @@ public class ParanoidKeyParameterFactory {
      */
     public KeyParameterWrapper generate(String password, byte[] salt) {
         logger.debug("generate()");
-        byte[] hashedPassword = new HasherBuilder()
-                .hasherProviderClass(ParanoidHasherProviderImpl.class)
-                .digest("SKEIN-512-256")
-                .iterations(iterationCount)
-                .saltSize(salt.length) // really just for logging
-                .build()
-                .generateHash(password, salt)
-                .getHash();
+        byte[] hashedPassword = hasher.generateHash(password, salt).getHash();
         KeyParameter keyParameter = new KeyParameter(hashedPassword);
         KeyParameterWrapper secretKeyWrapper = new KeyParameterWrapper(keyParameter, salt);
+        generateExpirationHandler(secretKeyWrapper);
         return secretKeyWrapper;
+    }
+
+    public static class Builder {
+        int iterationCount = 65536;
+        int experiationInMins = 10;
+
+        public Builder iterationCount(int iterationCount) {
+            this.iterationCount = iterationCount;
+            return this;
+        }
+
+        public Builder experiationInMins(int experiationInMins) {
+            this.experiationInMins = experiationInMins;
+            return this;
+        }
+
+        public ParanoidKeyParameterFactory build() {
+            Hasher hasher = new HasherBuilder()
+                    .hasherProviderClass(ParanoidHasherProviderImpl.class)
+                    .digest("SKEIN-512-256")
+                    .iterations(iterationCount)
+                    .build();
+            return new ParanoidKeyParameterFactory(experiationInMins, hasher);
+        }
     }
 
 }

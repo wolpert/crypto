@@ -42,6 +42,7 @@ public class Utilities {
 
     /**
      * Call this method once to validate the random provider is using the secure provider.
+     *
      * @return
      */
     public static boolean isSecureRandomProvider() {
