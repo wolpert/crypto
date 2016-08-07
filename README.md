@@ -6,6 +6,11 @@ This library is the bases for encrypting other components that I'm using elsewhe
 The goal is to make this as open as possible so if I do anything stupid, other
 people can comment.
 
+## TL; DR ##
+
+Password hashed with SCrypt. Encryption via AES-256, CTR Mode, PKCS7 Padding.
+Hashed passwords null out with inactivity.
+
 ## Supporting Strong Encryption ##
 
 Doing encryption right is hard. My goal is for a limited feature set, create an
@@ -27,6 +32,8 @@ not available in JDK7. It does default to 65536 iterations with 32-byte salt tho
 If this bugs you, use the Paranoid mode.
 
 Adding support to expire passwords forcing a user to re-enter in the password.
+This is baked in at the lowest level so using this library just has to handle the
+proper exception and reload with the users password.
 
 Uses the SecureRandom class for creating random bytes. If things run slow, this is why.
 Create more entropy folks. Do not change that to the regular random class. That would be
