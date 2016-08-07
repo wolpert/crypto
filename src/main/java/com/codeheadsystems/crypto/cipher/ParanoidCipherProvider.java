@@ -1,13 +1,15 @@
 package com.codeheadsystems.crypto.cipher;
 
-import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 
 import org.bouncycastle.crypto.engines.AESFastEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
+import org.bouncycastle.crypto.paddings.PKCS7Padding;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.codeheadsystems.crypto.Utilities.randomBytes;
 
 /**
  * BSD-Style License 2016
@@ -27,11 +29,14 @@ public class ParanoidCipherProvider implements CipherProvider {
     @Override
     public PaddedBufferedBlockCipher getCipher() {
         logger.debug("getCipher()");
-        return new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));
+        PKCS7Padding padding = new PKCS7Padding();
+        AESFastEngine aesFastEngine = new AESFastEngine();
+        CBCBlockCipher cbcBlockCipher = new CBCBlockCipher(aesFastEngine);
+        return new PaddedBufferedBlockCipher(cbcBlockCipher, padding);
     }
 
     @Override
     public byte[] getRandomIV() {
-        return Utilities.randomBytes(BLOCK_LENGTH);
+        return randomBytes(BLOCK_LENGTH);
     }
 }

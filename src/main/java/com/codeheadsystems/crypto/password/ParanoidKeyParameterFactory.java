@@ -21,12 +21,12 @@ import static com.codeheadsystems.crypto.Utilities.stringToBytes;
 public class ParanoidKeyParameterFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ParanoidKeyParameterFactory.class);
-    private final int experiationInMins;
+    private final int expirationInMins;
     private final Hasher hasher;
     private final Timer timer;
 
-    private ParanoidKeyParameterFactory(int experiationInMins, Hasher hasher) {
-        this.experiationInMins = experiationInMins;
+    private ParanoidKeyParameterFactory(int expirationInMins, Hasher hasher) {
+        this.expirationInMins = expirationInMins;
         this.hasher = hasher;
         this.timer = new Timer(true);
     }
@@ -40,8 +40,8 @@ public class ParanoidKeyParameterFactory {
     }
 
     protected ExpirationHandler generateExpirationHandler(KeyParameterWrapper keyParameterWrapper) {
-        if (experiationInMins > 0) {
-            return new StandardExpirationHandler(experiationInMins, timer, keyParameterWrapper);
+        if (expirationInMins > 0) {
+            return new StandardExpirationHandler(expirationInMins, timer, keyParameterWrapper);
         } else {
             return new NoopExpirationHandler();
         }
@@ -65,15 +65,15 @@ public class ParanoidKeyParameterFactory {
 
     public static class Builder {
         int iterationCount = 65536;
-        int experiationInMins = 10;
+        int expirationInMins = 10;
 
         public Builder iterationCount(int iterationCount) {
             this.iterationCount = iterationCount;
             return this;
         }
 
-        public Builder experiationInMins(int experiationInMins) {
-            this.experiationInMins = experiationInMins;
+        public Builder expirationInMins(int expirationInMins) {
+            this.expirationInMins = expirationInMins;
             return this;
         }
 
@@ -83,7 +83,7 @@ public class ParanoidKeyParameterFactory {
                     .digest("SKEIN-512-256")
                     .iterations(iterationCount)
                     .build();
-            return new ParanoidKeyParameterFactory(experiationInMins, hasher);
+            return new ParanoidKeyParameterFactory(expirationInMins, hasher);
         }
     }
 

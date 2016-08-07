@@ -44,7 +44,6 @@ public class ParanoidDecrypter extends ParanoidCipherProvider implements Decrypt
             return reduce(decryptedBytes, length1 + length2);
         } catch (InvalidCipherTextException e) {
             throw new CryptoException("Unable to decrypt bytes due to " + e.getLocalizedMessage(), e);
-
         }
     }
 }
