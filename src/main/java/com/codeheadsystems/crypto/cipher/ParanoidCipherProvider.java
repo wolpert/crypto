@@ -3,7 +3,7 @@ package com.codeheadsystems.crypto.cipher;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 
 import org.bouncycastle.crypto.engines.AESFastEngine;
-import org.bouncycastle.crypto.modes.CBCBlockCipher;
+import org.bouncycastle.crypto.modes.SICBlockCipher;
 import org.bouncycastle.crypto.paddings.PKCS7Padding;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.slf4j.Logger;
@@ -31,8 +31,8 @@ public class ParanoidCipherProvider implements CipherProvider {
         logger.debug("getCipher()");
         PKCS7Padding padding = new PKCS7Padding();
         AESFastEngine aesFastEngine = new AESFastEngine();
-        CBCBlockCipher cbcBlockCipher = new CBCBlockCipher(aesFastEngine);
-        return new PaddedBufferedBlockCipher(cbcBlockCipher, padding);
+        SICBlockCipher sicBlockCipher = new SICBlockCipher(aesFastEngine);
+        return new PaddedBufferedBlockCipher(sicBlockCipher, padding);
     }
 
     @Override

@@ -8,11 +8,11 @@ import org.junit.Test;
 /**
  * BSD-Style License 2016
  */
-public class ParanoidHasherTest extends AbstractHasherTest {
+public class MessageDigestHasherTest extends AbstractHasherTest {
 
     @Before
     public void createDefaultObjects() {
-        hasherBuilder = new HasherBuilder().hasherProviderClass(ParanoidHasherProviderImpl.class).digest("SKEIN-1024-1024");
+        hasherBuilder = new HasherBuilder().hasherProviderClass(MessageDigestHasherProviderImpl.class).digest("SKEIN-1024-1024");
         testWord = "This is a test";
     }
 

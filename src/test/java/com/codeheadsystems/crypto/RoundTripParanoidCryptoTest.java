@@ -5,6 +5,7 @@ import com.codeheadsystems.crypto.cipher.ParanoidDecrypter;
 import com.codeheadsystems.crypto.cipher.ParanoidEncrypter;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.MessageDigestKeyParameterFactory;
+import com.codeheadsystems.crypto.password.ParanoidKeyParameterFactory;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
 
@@ -18,11 +19,11 @@ import static org.junit.Assert.assertNotEquals;
 /**
  * BSD-Style License 2016
  */
-public class RoundTripCryptoTest {
+public class RoundTripParanoidCryptoTest {
 
     public static final String PASSWORD = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
     public static final String CLEAR_TEXT = "This is not a test... wait... it is...";
-    private MessageDigestKeyParameterFactory messageDigestKeyParameterFactory;
+    private ParanoidKeyParameterFactory paranoidKeyParameterFactory;
 
     @Before
     public void setRandomFactory() {
@@ -31,26 +32,29 @@ public class RoundTripCryptoTest {
 
     @Before
     public void createKeyParameterFactory() {
-        messageDigestKeyParameterFactory = new MessageDigestKeyParameterFactory.Builder().build();
+        paranoidKeyParameterFactory = new ParanoidKeyParameterFactory.Builder().iterationCount((int) Math.pow(2, 14)).build();
     }
 
     protected KeyParameterWrapper generate(byte[] salt) {
         if (salt != null) {
-            return messageDigestKeyParameterFactory.generate(PASSWORD, salt);
+            return paranoidKeyParameterFactory.generate(PASSWORD, salt);
         } else {
-            return messageDigestKeyParameterFactory.generate(PASSWORD);
+            return paranoidKeyParameterFactory.generate(PASSWORD);
         }
     }
 
     @Test
     public void testRoundTrip() throws SecretKeyExpiredException {
-        KeyParameterWrapper encryptKeyParameterWrapper = generate(null);
+        // This test is slow because its using the defaults
+        ParanoidKeyParameterFactory slowDefaultFactory = new ParanoidKeyParameterFactory.Builder().build();
+        KeyParameterWrapper encryptKeyParameterWrapper = slowDefaultFactory.generate(PASSWORD);
         byte[] salt = encryptKeyParameterWrapper.getSalt();
         assertEquals(256/8, encryptKeyParameterWrapper.getKeyParameter().getKey().length);
+        assertEquals(128/8, salt.length);
         EncryptedByteHolder encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
 
         // rebuild the keyParams
-        Decrypter decrypter = new ParanoidDecrypter(messageDigestKeyParameterFactory.generate(PASSWORD, salt));
+        Decrypter decrypter = new ParanoidDecrypter(slowDefaultFactory.generate(PASSWORD, salt));
         String decryptedText = decrypter.decryptText(encryptBytes);
         assertEquals(CLEAR_TEXT.length(), decryptedText.length());
         assertEquals(CLEAR_TEXT, decryptedText);
@@ -70,7 +74,7 @@ public class RoundTripCryptoTest {
         EncryptedByteHolder encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
 
         // rebuild the keyParams
-        Decrypter decrypter = new ParanoidDecrypter(messageDigestKeyParameterFactory.generate(PASSWORD, salt));
+        Decrypter decrypter = new ParanoidDecrypter(paranoidKeyParameterFactory.generate(PASSWORD, salt));
         String decryptedText = decrypter.decryptText(encryptBytes);
         assertEquals(CLEAR_TEXT.length(), decryptedText.length());
         assertEquals(CLEAR_TEXT, decryptedText);
@@ -88,14 +92,23 @@ public class RoundTripCryptoTest {
         decrypter.decryptText(encryptBytes);
     }
 
-    @Test(expected = CryptoException.class)
-    public void testRoundTripFailureViaIterationCount() throws SecretKeyExpiredException {
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidIterationCount() throws SecretKeyExpiredException {
         KeyParameterWrapper encryptKeyParameterWrapper = generate(null);
         byte[] salt = encryptKeyParameterWrapper.getSalt();
         EncryptedByteHolder encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
 
         // rebuild the keyParams
-        Decrypter decrypter = new ParanoidDecrypter(new MessageDigestKeyParameterFactory.Builder().iterationCount(500).build().generate(PASSWORD, salt));
+        new ParanoidDecrypter(new ParanoidKeyParameterFactory.Builder().iterationCount(500).build().generate(PASSWORD, salt));
+    }
+
+    @Test(expected = CryptoException.class)
+    public void testRoundTripFailureViaIterationCount() throws SecretKeyExpiredException {
+        KeyParameterWrapper encryptKeyParameterWrapper = generate(null);
+        byte[] salt = encryptKeyParameterWrapper.getSalt();
+        EncryptedByteHolder encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
+        // rebuild the keyParams
+        Decrypter decrypter = new ParanoidDecrypter(new ParanoidKeyParameterFactory.Builder().iterationCount((int)Math.pow(2, 15)).build().generate(PASSWORD, salt));
         decrypter.decryptText(encryptBytes);
     }
 }

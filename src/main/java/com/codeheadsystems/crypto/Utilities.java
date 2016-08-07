@@ -99,4 +99,8 @@ public class Utilities {
             return Base64.decode(string);
         }
     }
+
+    public static byte[] getBytes(String hashedValue) {
+        return hashedValue.getBytes(charset);
+    }
 }

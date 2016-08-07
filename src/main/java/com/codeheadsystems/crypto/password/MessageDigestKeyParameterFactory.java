@@ -3,7 +3,7 @@ package com.codeheadsystems.crypto.password;
 import com.codeheadsystems.crypto.Hasher;
 import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.hasher.HasherBuilder;
-import com.codeheadsystems.crypto.hasher.ParanoidHasherProviderImpl;
+import com.codeheadsystems.crypto.hasher.MessageDigestHasherProviderImpl;
 
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.slf4j.Logger;
@@ -18,21 +18,21 @@ import static com.codeheadsystems.crypto.Utilities.stringToBytes;
 /**
  * BSD-Style License 2016
  */
-public class ParanoidKeyParameterFactory {
+public class MessageDigestKeyParameterFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(ParanoidKeyParameterFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageDigestKeyParameterFactory.class);
     private final int expirationInMins;
     private final Hasher hasher;
     private final Timer timer;
 
-    private ParanoidKeyParameterFactory(int expirationInMins, Hasher hasher) {
+    private MessageDigestKeyParameterFactory(int expirationInMins, Hasher hasher) {
         this.expirationInMins = expirationInMins;
         this.hasher = hasher;
         this.timer = new Timer(true);
     }
 
     public KeyParameterWrapper generate(String password) {
-        return generate(password, Utilities.randomBytes(16));
+        return generate(password, Utilities.randomBytes(32));
     }
 
     public KeyParameterWrapper generate(String password, String salt) {
@@ -64,13 +64,10 @@ public class ParanoidKeyParameterFactory {
     }
 
     public static class Builder {
-        int iterationCount = (int) Math.pow(2, 20); // minimum is 2^14. We do 2^20 for this sensitive data
+        int iterationCount = 65536;
         int expirationInMins = 10;
 
         public Builder iterationCount(int iterationCount) {
-            if (iterationCount < 16384) {
-                throw new IllegalArgumentException("Unable to have an iteration count less then 16384: found " + iterationCount);
-            }
             this.iterationCount = iterationCount;
             return this;
         }
@@ -80,13 +77,13 @@ public class ParanoidKeyParameterFactory {
             return this;
         }
 
-        public ParanoidKeyParameterFactory build() {
+        public MessageDigestKeyParameterFactory build() {
             Hasher hasher = new HasherBuilder()
-                    .hasherProviderClass(ParanoidHasherProviderImpl.class)
+                    .hasherProviderClass(MessageDigestHasherProviderImpl.class)
+                    .digest("SKEIN-512-256")
                     .iterations(iterationCount)
-                    .saltSize(16) // 128 bit
                     .build();
-            return new ParanoidKeyParameterFactory(expirationInMins, hasher);
+            return new MessageDigestKeyParameterFactory(expirationInMins, hasher);
         }
     }
 

@@ -1,52 +1,65 @@
 package com.codeheadsystems.crypto.hasher;
 
 import com.codeheadsystems.crypto.Hasher;
+import com.codeheadsystems.crypto.Utilities;
 
+import org.bouncycastle.crypto.generators.SCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import static com.codeheadsystems.crypto.Utilities.getBytes;
+import static com.codeheadsystems.crypto.Utilities.randomBytes;
 
 /**
+ * Uses bouncy castle version of scrypt. Basically ignores most of the configuration
+ * <p/>
  * BSD-Style License 2016
  */
-public class ParanoidHasher extends AbstractSaltedHasher<MessageDigest> implements Hasher {
+public class ParanoidHasher implements Hasher {
 
     private static final Logger logger = LoggerFactory.getLogger(ParanoidHasher.class);
 
+    protected final int saltSize;
+    protected final int iterations;
+
+    protected final int r = 8;
+    protected final int p = 1;
+
     public ParanoidHasher(HasherConfiguration hasherConfiguration) {
-        super(hasherConfiguration);
+        saltSize = hasherConfiguration.saltSize;
+        iterations = hasherConfiguration.iterations;
+        logger.debug("Paranoid scrypt: n=" + iterations + " r=" + r + " p=" + p);
     }
 
-    private MessageDigest getMessageDigest() {
-        logger.debug("getMessageDigest()");
-        MessageDigest result = digesterThreadLocal.get();
-        if (result == null) {
-            try {
-                result = MessageDigest.getInstance(digest);
-            } catch (NoSuchAlgorithmException e) {
-                throw new HasherException("Failure with Algorithm: " + digest, e);
-            }
-            digesterThreadLocal.set(result);
-        }
-        return result;
+    public byte[] getSalt() {
+        return randomBytes(saltSize);
     }
 
     @Override
+    public String getDigest() {
+        return "scrypt";
+    }
+
+    @Override
+    public HashHolder generateHash(String unhashedString) {
+        return generateHash(unhashedString, getSalt());
+    }
+
+    @Override
+    public HashHolder generateHash(String unhashedString, byte[] salt) {
+        logger.debug("generateHash()");
+        return new HashHolder(salt, internalGenerateHash(unhashedString, salt));
+    }
+
+    @Override
+    public boolean isSame(HashHolder hashedString, String unhashedString) {
+        HashHolder newlyHashedString = generateHash(unhashedString, hashedString.getSalt());
+        return Utilities.isSame(hashedString.getHash(), newlyHashedString.getHash());
+    }
+
     protected byte[] internalGenerateHash(String unhashedString, byte[] salt) {
         logger.debug("internalGenerateHash(,)");
-        byte[] hashingBytes = getBytes(unhashedString);
-        MessageDigest messageDigest = getMessageDigest();
-        try {
-            for (int i = 0; i < iterations; i++) {
-                messageDigest.update(salt);
-                hashingBytes = messageDigest.digest(hashingBytes); // should reset the digest
-            }
-        } finally {
-            messageDigest.reset();
-        }
-        return hashingBytes;
+        return SCrypt.generate(getBytes(unhashedString), salt, iterations, r, p, 32); // 32 bytes, not 32 bits...
     }
 
 }
