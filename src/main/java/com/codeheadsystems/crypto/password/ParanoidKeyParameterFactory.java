@@ -18,49 +18,13 @@ import static com.codeheadsystems.crypto.Utilities.stringToBytes;
 /**
  * BSD-Style License 2016
  */
-public class ParanoidKeyParameterFactory {
+public class ParanoidKeyParameterFactory extends AbstractKeyParameterFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ParanoidKeyParameterFactory.class);
-    private final int expirationInMins;
-    private final Hasher hasher;
-    private final Timer timer;
 
-    private ParanoidKeyParameterFactory(int expirationInMins, Hasher hasher) {
-        this.expirationInMins = expirationInMins;
-        this.hasher = hasher;
-        this.timer = new Timer(true);
-    }
-
-    public KeyParameterWrapper generate(String password) {
-        return generate(password, Utilities.randomBytes(16));
-    }
-
-    public KeyParameterWrapper generate(String password, String salt) {
-        return generate(password, stringToBytes(salt));
-    }
-
-    protected ExpirationHandler generateExpirationHandler(KeyParameterWrapper keyParameterWrapper) {
-        if (expirationInMins > 0) {
-            return new StandardExpirationHandler(expirationInMins, timer, keyParameterWrapper);
-        } else {
-            return new NoopExpirationHandler();
-        }
-    }
-
-    /**
-     * Only can be used once. The password will have to be reset
-     *
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
-     */
-    public KeyParameterWrapper generate(String password, byte[] salt) {
-        logger.debug("generate()");
-        byte[] hashedPassword = hasher.generateHash(password, salt).getHash();
-        KeyParameter keyParameter = new KeyParameter(hashedPassword);
-        KeyParameterWrapper secretKeyWrapper = new KeyParameterWrapper(keyParameter, salt);
-        generateExpirationHandler(secretKeyWrapper);
-        return secretKeyWrapper;
+    protected ParanoidKeyParameterFactory(int expirationInMins, Hasher hasher) {
+        super(expirationInMins, hasher);
+        logger.debug("ParanoidKeyParameterFactory("+expirationInMins+","+hasher+")");
     }
 
     public static class Builder {
