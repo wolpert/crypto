@@ -52,6 +52,13 @@ Actually, do not trust me. Look at the code. See what it does and how it does it
 The encryption routines are fairly basic. The Hashing component will become simpler.
 Comment on the github page if you have any suggestions.
 
+## Expected Use-case ##
+
+The base use-case here is that the SCrypt-hashed key is used to encrypt the key-storage
+file. The key-storage file contains random keys generated for individual encrypted datasets.
+A dataset would be something like access to a website. But importantly, each dataset
+has its own key and is unique.
+
 ## Sample Usage ##
 
 #### Encryption ####
