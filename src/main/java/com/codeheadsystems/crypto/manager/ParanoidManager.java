@@ -1,5 +1,8 @@
-package com.codeheadsystems.crypto;
+package com.codeheadsystems.crypto.manager;
 
+import com.codeheadsystems.crypto.Decrypter;
+import com.codeheadsystems.crypto.Encrypter;
+import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.cipher.ParanoidDecrypter;
 import com.codeheadsystems.crypto.cipher.ParanoidEncrypter;
 import com.codeheadsystems.crypto.password.KeyParameterFactory;
@@ -20,9 +23,9 @@ public class ParanoidManager {
     private final Encrypter encrypter;
     private final Decrypter decrypter;
 
-    public ParanoidManager() throws ParanoidException {
+    public ParanoidManager() throws ParanoidManagerException {
         if (!Utilities.isSecureRandomProvider()) {
-            throw new ParanoidException("Paranoid Manager will not operate without SecureRandom provider");
+            throw new ParanoidManagerException("Paranoid Manager will not operate without SecureRandom provider");
         }
         timerProvider = new DefaultTimerProvider();
         encrypter = new ParanoidEncrypter();
