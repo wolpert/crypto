@@ -8,6 +8,8 @@ import com.codeheadsystems.crypto.password.MessageDigestKeyParameterFactory;
 import com.codeheadsystems.crypto.password.ParanoidKeyParameterFactory;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
+import com.codeheadsystems.crypto.timer.DefaultTimerProvider;
+import com.codeheadsystems.crypto.timer.TimerProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +26,7 @@ public class RoundTripParanoidCryptoTest {
     public static final String PASSWORD = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
     public static final String CLEAR_TEXT = "This is not a test... wait... it is...";
     private ParanoidKeyParameterFactory paranoidKeyParameterFactory;
+    private TimerProvider timerProvider = new DefaultTimerProvider();
 
     @Before
     public void setRandomFactory() {
@@ -32,7 +35,7 @@ public class RoundTripParanoidCryptoTest {
 
     @Before
     public void createKeyParameterFactory() {
-        paranoidKeyParameterFactory = new ParanoidKeyParameterFactory.Builder().iterationCount((int) Math.pow(2, 14)).build();
+        paranoidKeyParameterFactory = new ParanoidKeyParameterFactory.Builder().timerProvider(timerProvider).iterationCount((int) Math.pow(2, 14)).build();
     }
 
     protected KeyParameterWrapper generate(byte[] salt) {
@@ -46,7 +49,7 @@ public class RoundTripParanoidCryptoTest {
     @Test
     public void testRoundTrip() throws SecretKeyExpiredException {
         // This test is slow because its using the defaults
-        ParanoidKeyParameterFactory slowDefaultFactory = new ParanoidKeyParameterFactory.Builder().build();
+        ParanoidKeyParameterFactory slowDefaultFactory = new ParanoidKeyParameterFactory.Builder().timerProvider(timerProvider).build();
         KeyParameterWrapper encryptKeyParameterWrapper = slowDefaultFactory.generate(PASSWORD);
         byte[] salt = encryptKeyParameterWrapper.getSalt();
         assertEquals(256/8, encryptKeyParameterWrapper.getKeyParameter().getKey().length);
@@ -108,7 +111,7 @@ public class RoundTripParanoidCryptoTest {
         byte[] salt = encryptKeyParameterWrapper.getSalt();
         EncryptedByteHolder encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
         // rebuild the keyParams
-        Decrypter decrypter = new ParanoidDecrypter(new ParanoidKeyParameterFactory.Builder().iterationCount((int)Math.pow(2, 15)).build().generate(PASSWORD, salt));
+        Decrypter decrypter = new ParanoidDecrypter(new ParanoidKeyParameterFactory.Builder().timerProvider(timerProvider).iterationCount((int)Math.pow(2, 15)).build().generate(PASSWORD, salt));
         decrypter.decryptText(encryptBytes);
     }
 }

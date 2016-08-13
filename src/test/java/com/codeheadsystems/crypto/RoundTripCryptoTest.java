@@ -7,6 +7,8 @@ import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.MessageDigestKeyParameterFactory;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
+import com.codeheadsystems.crypto.timer.DefaultTimerProvider;
+import com.codeheadsystems.crypto.timer.TimerProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +25,7 @@ public class RoundTripCryptoTest {
     public static final String PASSWORD = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
     public static final String CLEAR_TEXT = "This is not a test... wait... it is...";
     private MessageDigestKeyParameterFactory messageDigestKeyParameterFactory;
+    private TimerProvider timerProvider = new DefaultTimerProvider();
 
     @Before
     public void setRandomFactory() {
@@ -31,7 +34,7 @@ public class RoundTripCryptoTest {
 
     @Before
     public void createKeyParameterFactory() {
-        messageDigestKeyParameterFactory = new MessageDigestKeyParameterFactory.Builder().build();
+        messageDigestKeyParameterFactory = new MessageDigestKeyParameterFactory.Builder().timerProvider(timerProvider).build();
     }
 
     protected KeyParameterWrapper generate(byte[] salt) {
@@ -95,7 +98,7 @@ public class RoundTripCryptoTest {
         EncryptedByteHolder encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
 
         // rebuild the keyParams
-        Decrypter decrypter = new ParanoidDecrypter(new MessageDigestKeyParameterFactory.Builder().iterationCount(500).build().generate(PASSWORD, salt));
+        Decrypter decrypter = new ParanoidDecrypter(new MessageDigestKeyParameterFactory.Builder().timerProvider(timerProvider).iterationCount(500).build().generate(PASSWORD, salt));
         decrypter.decryptText(encryptBytes);
     }
 }

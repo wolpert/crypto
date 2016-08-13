@@ -2,6 +2,7 @@ package com.codeheadsystems.crypto.password;
 
 import com.codeheadsystems.crypto.Hasher;
 import com.codeheadsystems.crypto.Utilities;
+import com.codeheadsystems.crypto.timer.TimerProvider;
 
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import java.util.Random;
 import java.util.Timer;
 
 import static com.codeheadsystems.crypto.Utilities.stringToBytes;
+import static java.util.Objects.requireNonNull;
 
 /**
  * BSD-Style License 2016
@@ -26,10 +28,10 @@ public abstract class AbstractKeyParameterFactory {
     protected final Hasher hasher;
     protected final Timer timer;
 
-    protected AbstractKeyParameterFactory(int expirationInMins, Hasher hasher) {
+    protected AbstractKeyParameterFactory(int expirationInMins, Hasher hasher, TimerProvider timerProvider) {
         this.expirationInMins = expirationInMins;
-        this.hasher = hasher;
-        this.timer = new Timer(true);
+        this.hasher = requireNonNull(hasher);
+        this.timer = requireNonNull(timerProvider.getTimer());
         if (!Utilities.isSecureRandomProvider()) {
             logger.error("NOT USING A SECURE RANDOM PROVIDER. USING: " + Utilities.getRandomProvider().getClass().getCanonicalName());
         }

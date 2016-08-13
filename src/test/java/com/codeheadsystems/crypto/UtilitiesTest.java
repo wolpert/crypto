@@ -44,4 +44,14 @@ public class UtilitiesTest {
         byte[] array = randomBytes(10);
         assertEquals(10, array.length);
     }
+
+    @Test
+    public void hexConversion() {
+        byte[] array = randomBytes(200);
+        String hexString = Utilities.toHex(array);
+        byte[] resultingArray = Utilities.fromHex(hexString);
+        for (int i = 0; i < array.length; i++) {
+            assertEquals(array[i], resultingArray[i]);
+        }
+    }
 }

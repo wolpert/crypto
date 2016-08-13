@@ -4,6 +4,7 @@ import com.codeheadsystems.crypto.random.RandomProvider;
 import com.codeheadsystems.crypto.random.SecureRandomProvider;
 
 import org.bouncycastle.util.encoders.Base64;
+import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,6 @@ import java.util.Random;
  */
 public class Utilities {
 
-    private static final Charset charset = Charset.forName("UTF-16LE");
     private static final Logger logger = LoggerFactory.getLogger(Utilities.class);
 
     private static RandomProvider randomProvider;
@@ -23,6 +23,7 @@ public class Utilities {
     public static synchronized RandomProvider getRandomProvider() {
         if (randomProvider == null) {
             randomProvider = new SecureRandomProvider();
+            logger.info("Secure random provider is set");
         }
         return randomProvider;
     }
@@ -81,7 +82,7 @@ public class Utilities {
     }
 
     public static Charset getCharset() {
-        return charset;
+        return Charset.forName("UTF-16LE");
     }
 
     public static String bytesToString(byte[] bytes) {
@@ -90,6 +91,14 @@ public class Utilities {
         } else {
             return "null";
         }
+    }
+
+    public static String toHex(byte[] bytes) {
+        return Hex.toHexString(bytes);
+    }
+
+    public static byte[] fromHex(String hexString) {
+        return Hex.decode(hexString);
     }
 
     public static byte[] stringToBytes(String string) {
@@ -101,6 +110,6 @@ public class Utilities {
     }
 
     public static byte[] getBytes(String hashedValue) {
-        return hashedValue.getBytes(charset);
+        return hashedValue.getBytes(getCharset());
     }
 }
