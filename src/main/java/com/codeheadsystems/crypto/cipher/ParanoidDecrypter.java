@@ -21,17 +21,13 @@ public class ParanoidDecrypter extends ParanoidCipherProvider implements Decrypt
 
     private static final Logger logger = LoggerFactory.getLogger(ParanoidDecrypter.class);
 
-    public ParanoidDecrypter(KeyParameterWrapper keyParameterWrapper) {
-        super(keyParameterWrapper);
+    @Override
+    public String decryptText(KeyParameterWrapper keyParameterWrapper, EncryptedByteHolder encryptedBytes) throws CryptoException, SecretKeyExpiredException {
+        return new String(decryptBytes(keyParameterWrapper, encryptedBytes), getCharset());
     }
 
     @Override
-    public String decryptText(EncryptedByteHolder encryptedBytes) throws CryptoException, SecretKeyExpiredException {
-        return new String(decryptBytes(encryptedBytes), getCharset());
-    }
-
-    @Override
-    public byte[] decryptBytes(EncryptedByteHolder encryptedBytes) throws CryptoException, SecretKeyExpiredException {
+    public byte[] decryptBytes(KeyParameterWrapper keyParameterWrapper, EncryptedByteHolder encryptedBytes) throws CryptoException, SecretKeyExpiredException {
         logger.debug("decryptBytes()");
         try {
             PaddedBufferedBlockCipher cipher = getCipher();

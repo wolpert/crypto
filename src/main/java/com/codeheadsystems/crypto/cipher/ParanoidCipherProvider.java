@@ -19,13 +19,6 @@ public class ParanoidCipherProvider implements CipherProvider {
     private final static Logger logger = LoggerFactory.getLogger(ParanoidCipherProvider.class);
     private final static int BLOCK_LENGTH = 16;
 
-    protected final KeyParameterWrapper keyParameterWrapper;
-
-    public ParanoidCipherProvider(KeyParameterWrapper keyParameterWrapper) {
-        logger.debug("ParanoidCipherProvider()");
-        this.keyParameterWrapper = keyParameterWrapper;
-    }
-
     @Override
     public PaddedBufferedBlockCipher getCipher() {
         logger.debug("getCipher()");

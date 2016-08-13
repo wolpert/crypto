@@ -1,6 +1,7 @@
 package com.codeheadsystems.crypto;
 
 import com.codeheadsystems.crypto.cipher.EncryptedByteHolder;
+import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 
 /**
@@ -8,8 +9,8 @@ import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
  */
 public interface Decrypter {
 
-    public String decryptText(EncryptedByteHolder encryptedBytes) throws CryptoException, SecretKeyExpiredException;
+    String decryptText(KeyParameterWrapper keyParameterWrapper, EncryptedByteHolder encryptedBytes) throws CryptoException, SecretKeyExpiredException;
 
-    public byte[] decryptBytes(EncryptedByteHolder encryptedBytes) throws CryptoException, SecretKeyExpiredException;
+    byte[] decryptBytes(KeyParameterWrapper keyParameterWrapper, EncryptedByteHolder encryptedBytes) throws CryptoException, SecretKeyExpiredException;
 
 }

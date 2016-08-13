@@ -27,7 +27,7 @@ public class StandardExpirationHandlerTest {
     public void testFullExpiration() throws SecretKeyExpiredException, InterruptedException {
         KeyParameterFactory keyParameterFactory = new MessageDigestKeyParameterFactory.Builder()
                 .timerProvider(timerProvider)
-                .expirationInMills(500)
+                .expirationInMills(400)
                 .build();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD); // no salt
         assertNotNull(keyParameterWrapper.getKeyParameter());
