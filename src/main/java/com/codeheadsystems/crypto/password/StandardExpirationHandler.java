@@ -13,16 +13,18 @@ public class StandardExpirationHandler implements ExpirationHandler {
 
     private static Logger logger = LoggerFactory.getLogger(StandardExpirationHandler.class);
 
-    private final int expirationInMins;
+    private final long expirationInMills;
     private final KeyParameterWrapper keyParameterWrapper;
     private volatile Timer timer;
     private volatile TimerTask timerTask;
 
-    public StandardExpirationHandler(int expirationInMins, Timer timer, KeyParameterWrapper keyParameterWrapper) {
-        this.expirationInMins = expirationInMins;
+    public StandardExpirationHandler(long expirationInMills, Timer timer, KeyParameterWrapper keyParameterWrapper) {
+        this.expirationInMills = expirationInMills;
         this.timer = timer;
         this.keyParameterWrapper = keyParameterWrapper;
         this.keyParameterWrapper.setExpirationHandler(this);
+        timerTask = getTimerTask();
+        timer.schedule(timerTask, expirationInMills);
     }
 
     private TimerTask getTimerTask() {
@@ -49,7 +51,7 @@ public class StandardExpirationHandler implements ExpirationHandler {
                     timerTask.cancel();
                 }
                 timerTask = getTimerTask();
-                timer.schedule(timerTask, expirationInMins * 60000);
+                timer.schedule(timerTask, expirationInMills);
             } else {
                 logger.debug("\tdisabled since timer is null. (already expired)");
             }

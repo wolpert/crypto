@@ -19,17 +19,17 @@ import static java.util.Objects.requireNonNull;
 /**
  * BSD-Style License 2016
  */
-public abstract class AbstractKeyParameterFactory {
+public abstract class KeyParameterFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractKeyParameterFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(KeyParameterFactory.class);
 
     protected final Random random;
-    protected final int expirationInMins;
+    protected final long expirationInMills;
     protected final Hasher hasher;
     protected final Timer timer;
 
-    protected AbstractKeyParameterFactory(int expirationInMins, Hasher hasher, TimerProvider timerProvider) {
-        this.expirationInMins = expirationInMins;
+    protected KeyParameterFactory(long expirationInMills, Hasher hasher, TimerProvider timerProvider) {
+        this.expirationInMills = expirationInMills;
         this.hasher = requireNonNull(hasher);
         this.timer = requireNonNull(timerProvider.getTimer());
         if (!Utilities.isSecureRandomProvider()) {
@@ -47,8 +47,8 @@ public abstract class AbstractKeyParameterFactory {
     }
 
     protected ExpirationHandler generateExpirationHandler(KeyParameterWrapper keyParameterWrapper) {
-        if (expirationInMins > 0) {
-            return new StandardExpirationHandler(expirationInMins, timer, keyParameterWrapper);
+        if (expirationInMills > 0) {
+            return new StandardExpirationHandler(expirationInMills, timer, keyParameterWrapper);
         } else {
             return new NoopExpirationHandler();
         }
@@ -86,5 +86,36 @@ public abstract class AbstractKeyParameterFactory {
      */
     public KeyParameterWrapper generateRandomKeyParameter(int keysizeInBytes) {
         return new KeyParameterWrapper(new KeyParameter(generateRandomKey(keysizeInBytes)), null);
+    }
+
+    public KeyParameterWrapper generateRandom256KeyParameter() {
+        return generateRandomKeyParameter(256 / 8);
+    }
+
+    public static abstract class AbstractKeyParameterFactoryBuilder<T extends KeyParameterFactory> {
+        protected int iterationCount = (int) Math.pow(2, 20); // minimum is 2^14. We do 2^20 for this sensitive data
+        protected long expirationInMills = 600000;
+        protected TimerProvider timerProvider;
+
+        abstract public T build();
+
+        public AbstractKeyParameterFactoryBuilder iterationCount(int iterationCount) {
+            this.iterationCount = iterationCount;
+            return this;
+        }
+
+        public AbstractKeyParameterFactoryBuilder expirationInMins(int expirationInMins) {
+            return expirationInMills(expirationInMins * 60000);
+        }
+
+        public AbstractKeyParameterFactoryBuilder expirationInMills(long expirationInMills) {
+            this.expirationInMills = expirationInMills;
+            return this;
+        }
+
+        public AbstractKeyParameterFactoryBuilder timerProvider(TimerProvider timerProvider) {
+            this.timerProvider = timerProvider;
+            return this;
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.codeheadsystems.crypto;
 import com.codeheadsystems.crypto.cipher.EncryptedByteHolder;
 import com.codeheadsystems.crypto.cipher.ParanoidDecrypter;
 import com.codeheadsystems.crypto.cipher.ParanoidEncrypter;
+import com.codeheadsystems.crypto.password.KeyParameterFactory;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.MessageDigestKeyParameterFactory;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
@@ -24,7 +25,7 @@ public class RoundTripCryptoTest {
 
     public static final String PASSWORD = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
     public static final String CLEAR_TEXT = "This is not a test... wait... it is...";
-    private MessageDigestKeyParameterFactory messageDigestKeyParameterFactory;
+    private KeyParameterFactory messageDigestKeyParameterFactory;
     private TimerProvider timerProvider = new DefaultTimerProvider();
 
     @Before
@@ -46,10 +47,15 @@ public class RoundTripCryptoTest {
     }
 
     @Test
+    public void testInstanceName() {
+        assert messageDigestKeyParameterFactory instanceof MessageDigestKeyParameterFactory;
+    }
+
+    @Test
     public void testRoundTrip() throws SecretKeyExpiredException {
         KeyParameterWrapper encryptKeyParameterWrapper = generate(null);
         byte[] salt = encryptKeyParameterWrapper.getSalt();
-        assertEquals(256/8, encryptKeyParameterWrapper.getKeyParameter().getKey().length);
+        assertEquals(256 / 8, encryptKeyParameterWrapper.getKeyParameter().getKey().length);
         EncryptedByteHolder encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
 
         // rebuild the keyParams

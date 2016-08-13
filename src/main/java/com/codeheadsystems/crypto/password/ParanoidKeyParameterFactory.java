@@ -11,45 +11,33 @@ import org.slf4j.LoggerFactory;
 /**
  * BSD-Style License 2016
  */
-public class ParanoidKeyParameterFactory extends AbstractKeyParameterFactory {
+public class ParanoidKeyParameterFactory extends KeyParameterFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ParanoidKeyParameterFactory.class);
 
-    protected ParanoidKeyParameterFactory(int expirationInMins, Hasher hasher, TimerProvider timerProvider) {
-        super(expirationInMins, hasher, timerProvider);
-        logger.debug("ParanoidKeyParameterFactory(" + expirationInMins + "," + hasher + ")");
+    protected ParanoidKeyParameterFactory(long expirationInMills, Hasher hasher, TimerProvider timerProvider) {
+        super(expirationInMills, hasher, timerProvider);
+        logger.debug("ParanoidKeyParameterFactory(" + expirationInMills + "," + hasher + ")");
     }
 
-    public static class Builder {
-        int iterationCount = (int) Math.pow(2, 20); // minimum is 2^14. We do 2^20 for this sensitive data
-        int expirationInMins = 10;
-        TimerProvider timerProvider;
+    public static class Builder extends AbstractKeyParameterFactoryBuilder<ParanoidKeyParameterFactory> {
 
-        public Builder iterationCount(int iterationCount) {
+        @Override
+        public AbstractKeyParameterFactoryBuilder iterationCount(int iterationCount) {
             if (iterationCount < 16384) {
                 throw new IllegalArgumentException("Unable to have an iteration count less then 16384: found " + iterationCount);
             }
-            this.iterationCount = iterationCount;
-            return this;
+            return super.iterationCount(iterationCount);
         }
 
-        public Builder expirationInMins(int expirationInMins) {
-            this.expirationInMins = expirationInMins;
-            return this;
-        }
-
-        public Builder timerProvider(TimerProvider timerProvider) {
-            this.timerProvider = timerProvider;
-            return this;
-        }
-
+        @Override
         public ParanoidKeyParameterFactory build() {
             Hasher hasher = new HasherBuilder()
                     .hasherProviderClass(ParanoidHasherProviderImpl.class)
                     .iterations(iterationCount)
                     .saltSize(16) // 128 bit
                     .build();
-            return new ParanoidKeyParameterFactory(expirationInMins, hasher, timerProvider);
+            return new ParanoidKeyParameterFactory(expirationInMills, hasher, timerProvider);
         }
     }
 

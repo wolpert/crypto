@@ -11,42 +11,25 @@ import org.slf4j.LoggerFactory;
 /**
  * BSD-Style License 2016
  */
-public class MessageDigestKeyParameterFactory extends AbstractKeyParameterFactory {
+public class MessageDigestKeyParameterFactory extends KeyParameterFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageDigestKeyParameterFactory.class);
 
-    private MessageDigestKeyParameterFactory(int expirationInMins, Hasher hasher, TimerProvider timerProvider) {
-        super(expirationInMins, hasher, timerProvider);
-        logger.debug("MessageDigestKeyParameterFactory(" + expirationInMins + "," + hasher + ")");
+    private MessageDigestKeyParameterFactory(long expirationInMills, Hasher hasher, TimerProvider timerProvider) {
+        super(expirationInMills, hasher, timerProvider);
+        logger.debug("MessageDigestKeyParameterFactory(" + expirationInMills + "," + hasher + ")");
     }
 
-    public static class Builder {
-        int iterationCount = 65536;
-        int expirationInMins = 10;
-        TimerProvider timerProvider;
+    public static class Builder extends AbstractKeyParameterFactoryBuilder<MessageDigestKeyParameterFactory> {
 
-        public Builder iterationCount(int iterationCount) {
-            this.iterationCount = iterationCount;
-            return this;
-        }
-
-        public Builder expirationInMins(int expirationInMins) {
-            this.expirationInMins = expirationInMins;
-            return this;
-        }
-
-        public Builder timerProvider(TimerProvider timerProvider) {
-            this.timerProvider = timerProvider;
-            return this;
-        }
-
+        @Override
         public MessageDigestKeyParameterFactory build() {
             Hasher hasher = new HasherBuilder()
                     .hasherProviderClass(MessageDigestHasherProviderImpl.class)
                     .digest("SKEIN-512-256")
                     .iterations(iterationCount)
                     .build();
-            return new MessageDigestKeyParameterFactory(expirationInMins, hasher, timerProvider);
+            return new MessageDigestKeyParameterFactory(expirationInMills, hasher, timerProvider);
         }
     }
 
