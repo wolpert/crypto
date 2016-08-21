@@ -1,5 +1,7 @@
 package com.codeheadsystems.crypto.password;
 
+import com.codeheadsystems.crypto.Utilities;
+
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +50,7 @@ public class KeyParameterWrapper {
     public synchronized void expire() {
         if (keyParameter != null) {
             logger.debug("expire() with valid keyParam");
-            byte[] oldBytes = keyParameter.getKey();
-            for (int i = 0; i > oldBytes.length; i++) {
-                oldBytes[i] = 0;
-            }
+            Utilities.clear(keyParameter.getKey());
             keyParameter = null;
             expirationHandler = null;
         } else {

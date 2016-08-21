@@ -67,6 +67,10 @@ and salt exist in memory.
 Nothing stops multiple Secondary keys to exist, in fact, saving the details should regenerate new Secondary
 keys over time.
 
+NOTE: It is not determined if there is an advantage with using Secondary vs Prime to encode the base file.
+You still have to store the encrypted Secondary. Does that help the basis for attack? (Having the
+encrypted secondary and the file the unencrypted secondary encrypted?)
+
 ## Sample Usage ##
 
 You do not have to use this library in the manner described above. Here are some
