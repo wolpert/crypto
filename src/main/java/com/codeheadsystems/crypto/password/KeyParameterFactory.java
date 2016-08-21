@@ -2,6 +2,7 @@ package com.codeheadsystems.crypto.password;
 
 import com.codeheadsystems.crypto.Hasher;
 import com.codeheadsystems.crypto.Utilities;
+import com.codeheadsystems.crypto.random.RandomProvider;
 import com.codeheadsystems.crypto.timer.TimerProvider;
 
 import org.bouncycastle.crypto.params.KeyParameter;
@@ -10,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Random;
 import java.util.Timer;
 
 import static com.codeheadsystems.crypto.Utilities.stringToBytes;
@@ -23,7 +23,7 @@ public abstract class KeyParameterFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(KeyParameterFactory.class);
 
-    protected final Random random;
+    protected final RandomProvider randomProvider;
     protected final long expirationInMills;
     protected final Hasher hasher;
     protected final Timer timer;
@@ -35,7 +35,7 @@ public abstract class KeyParameterFactory {
         if (!Utilities.isSecureRandomProvider()) {
             logger.error("NOT USING A SECURE RANDOM PROVIDER. USING: " + Utilities.getRandomProvider().getClass().getCanonicalName());
         }
-        this.random = Utilities.getRandomProvider().getRandom();
+        this.randomProvider = Utilities.getRandomProvider();
     }
 
     public KeyParameterWrapper generate(String password) {
@@ -73,7 +73,7 @@ public abstract class KeyParameterFactory {
 
     public byte[] generateRandomKey(int keysizeInBytes) {
         byte[] key = new byte[keysizeInBytes];
-        random.nextBytes(key);
+        randomProvider.getRandom().nextBytes(key);
         return key;
     }
 

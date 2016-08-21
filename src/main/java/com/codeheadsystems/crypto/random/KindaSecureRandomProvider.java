@@ -6,9 +6,10 @@ import java.util.Random;
 /**
  * BSD-Style License 2016
  */
-public class KindaSecureRandomProvider implements RandomProvider {
+public class KindaSecureRandomProvider extends AbstractRandomProvider {
+
     @Override
-    public Random getRandom() {
+    public Random getFreshRandom() {
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.setSeed(secureRandom.generateSeed(16));
         return new Random(secureRandom.nextLong());

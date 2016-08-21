@@ -5,9 +5,11 @@ import java.util.Random;
 /**
  * Created by wolpert on 7/22/16.
  */
-public class UnsecureRandomProvider implements RandomProvider {
+public class UnsecureRandomProvider extends AbstractRandomProvider {
+
     @Override
-    public Random getRandom() {
+    public Random getFreshRandom() {
         return new Random();
     }
+
 }

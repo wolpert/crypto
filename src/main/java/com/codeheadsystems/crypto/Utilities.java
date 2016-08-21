@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
-import java.util.Random;
 
 /**
  * BSD-Style License 2016
@@ -37,14 +36,10 @@ public class Utilities {
         }
     }
 
-    public static Random getRandom() {
-        return getRandomProvider().getRandom();
-    }
-
     /**
      * Call this method once to validate the random provider is using the secure provider.
      *
-     * @return
+     * @return boolean
      */
     public static boolean isSecureRandomProvider() {
         return getRandomProvider().getClass().equals(SecureRandomProvider.class);
@@ -76,9 +71,7 @@ public class Utilities {
     }
 
     public static byte[] randomBytes(int size) {
-        byte[] result = new byte[size];
-        getRandom().nextBytes(result);
-        return result;
+        return getRandomProvider().randomBytes(size);
     }
 
     public static Charset getCharset() {

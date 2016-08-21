@@ -9,4 +9,5 @@ public interface RandomProvider {
 
     Random getRandom();
 
+    byte[] randomBytes(int size);
 }
