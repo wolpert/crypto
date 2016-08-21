@@ -1,13 +1,14 @@
 package com.codeheadsystems.crypto.cipher;
 
+import com.codeheadsystems.crypto.Utilities;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.StringTokenizer;
 
 import static com.codeheadsystems.crypto.Utilities.bytesToString;
-import static com.codeheadsystems.crypto.Utilities.stringToBytes;
+import static com.codeheadsystems.crypto.cipher.ParanoidCipherProvider.BLOCK_LENGTH;
 
 /**
  * BSD-Style License 2016
@@ -26,17 +27,24 @@ public class EncryptedByteHolder implements Serializable {
     }
 
     public static EncryptedByteHolder fromString(String string) {
-        StringTokenizer st = new StringTokenizer(string, ":");
-        if (st.countTokens() != 2) {
-            return null;
-        }
-        String ivStr = st.nextToken();
-        String ebStr = st.nextToken();
-        return new EncryptedByteHolder(stringToBytes(ebStr), stringToBytes(ivStr));
+        byte[] bytes = Utilities.stringToBytes(string);
+        return fromBytes(bytes);
+    }
+
+    public static EncryptedByteHolder fromBytes(byte[] a) {
+        byte[] iv = new byte[BLOCK_LENGTH];
+        System.arraycopy(a, 0, iv, 0, BLOCK_LENGTH);
+        byte[] encryptedBytes = new byte[a.length - BLOCK_LENGTH];
+        System.arraycopy(a, BLOCK_LENGTH, encryptedBytes, 0, encryptedBytes.length);
+        return new EncryptedByteHolder(encryptedBytes, iv);
+    }
+
+    public byte[] toBytes() {
+        return Utilities.add(iv, encryptedBytes);
     }
 
     public String toString() {
-        return bytesToString(iv) + ":" + bytesToString(encryptedBytes);
+        return bytesToString(toBytes());
     }
 
     public byte[] getEncryptedBytes() {

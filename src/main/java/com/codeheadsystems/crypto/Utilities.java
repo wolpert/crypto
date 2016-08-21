@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
+import java.util.UUID;
 
 /**
  * BSD-Style License 2016
@@ -104,5 +105,20 @@ public class Utilities {
 
     public static byte[] getBytes(String hashedValue) {
         return hashedValue.getBytes(getCharset());
+    }
+
+    public static String getUuid() {
+        return UUID.randomUUID().toString();
+    }
+
+    // Extra paranoia mode.... always clears
+    // bytes, and returns a null
+    public static byte[] clear(byte[] array) {
+        if (array!=null){
+            for(int i=0;i<array.length;i++) {
+                array[i]=0;
+            }
+        }
+        return null;
     }
 }

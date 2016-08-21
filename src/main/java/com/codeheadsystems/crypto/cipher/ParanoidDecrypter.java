@@ -7,6 +7,7 @@ import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
+import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,18 +23,29 @@ public class ParanoidDecrypter extends ParanoidCipherProvider implements Decrypt
     private static final Logger logger = LoggerFactory.getLogger(ParanoidDecrypter.class);
 
     @Override
-    public String decryptText(KeyParameterWrapper keyParameterWrapper, EncryptedByteHolder encryptedBytes) throws CryptoException, SecretKeyExpiredException {
-        return new String(decryptBytes(keyParameterWrapper, encryptedBytes), getCharset());
+    public String decryptText(KeyParameterWrapper keyParameterWrapper, byte[] encryptedBytes) throws CryptoException, SecretKeyExpiredException {
+        return decryptText(keyParameterWrapper.getKeyParameter(), encryptedBytes);
     }
 
     @Override
-    public byte[] decryptBytes(KeyParameterWrapper keyParameterWrapper, EncryptedByteHolder encryptedBytes) throws CryptoException, SecretKeyExpiredException {
+    public String decryptText(KeyParameter keyParameter, byte[] encryptedBytes) throws CryptoException {
+        return new String(decryptBytes(keyParameter, encryptedBytes), getCharset());
+    }
+
+    @Override
+    public byte[] decryptBytes(KeyParameterWrapper keyParameterWrapper, byte[] encryptedBytes) throws CryptoException, SecretKeyExpiredException {
+        return decryptBytes(keyParameterWrapper.getKeyParameter(), encryptedBytes);
+    }
+
+    @Override
+    public byte[] decryptBytes(KeyParameter keyParameter, byte[] encryptedBytes) throws CryptoException {
         logger.debug("decryptBytes()");
         try {
+            EncryptedByteHolder encryptedByteHolder = EncryptedByteHolder.fromBytes(encryptedBytes);
             PaddedBufferedBlockCipher cipher = getCipher();
-            ParametersWithIV keyWithIv = new ParametersWithIV(keyParameterWrapper.getKeyParameter(), encryptedBytes.getIv());
+            ParametersWithIV keyWithIv = new ParametersWithIV(keyParameter, encryptedByteHolder.getIv());
             cipher.init(false, keyWithIv);
-            byte[] cipherBytes = encryptedBytes.getEncryptedBytes();
+            byte[] cipherBytes = encryptedByteHolder.getEncryptedBytes();
             byte[] decryptedBytes = new byte[cipher.getOutputSize(cipherBytes.length)];
             final int length1 = cipher.processBytes(cipherBytes, 0, cipherBytes.length, decryptedBytes, 0);
             final int length2 = cipher.doFinal(decryptedBytes, length1);

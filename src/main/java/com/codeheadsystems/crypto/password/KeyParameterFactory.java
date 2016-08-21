@@ -84,11 +84,11 @@ public abstract class KeyParameterFactory {
      * @param keysizeInBytes
      * @return
      */
-    public KeyParameterWrapper generateRandomKeyParameter(int keysizeInBytes) {
-        return new KeyParameterWrapper(new KeyParameter(generateRandomKey(keysizeInBytes)), null);
+    public KeyParameter generateRandomKeyParameter(int keysizeInBytes) {
+        return new KeyParameter(generateRandomKey(keysizeInBytes));
     }
 
-    public KeyParameterWrapper generateRandom256KeyParameter() {
+    public KeyParameter generateRandom256KeyParameter() {
         return generateRandomKeyParameter(256 / 8);
     }
 
