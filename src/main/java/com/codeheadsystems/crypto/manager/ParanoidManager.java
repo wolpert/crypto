@@ -17,7 +17,7 @@ import java.io.IOException;
 
 /**
  * Effectively a facade around the paranoid facilities.
- *
+ * <p/>
  * <p/>
  * BSD-Style License 2016
  */
@@ -43,6 +43,25 @@ public class ParanoidManager {
 
     public KeyParameter generateRandomAesKey() {
         return shortTermKeyParameterFactory.generateRandom256KeyParameter();
+    }
+
+    protected KeyParameterWrapper generatePrime(String password, byte[] salt) {
+        return shortTermKeyParameterFactory.generate(password, salt);
+    }
+
+    public SecondaryKey generateFreshSecondary(String password, byte[] salt) throws SecretKeyExpiredException {
+        KeyParameterWrapper prime = generatePrime(password, salt);
+        KeyParameterWrapper secondary = longTermKeyParameterFactory.generateRandom256KeyParameterWrapper();
+        prime.expire();
+        byte[] encryptedSecondary = encrypter.encryptBytes(prime, secondary.getKeyParameter().getKey());
+        return new SecondaryKey(secondary, encryptedSecondary);
+    }
+
+    public SecondaryKey regenerateSecondary(String password, byte[] salt, byte[] encryptedSecondary) throws SecretKeyExpiredException {
+        KeyParameterWrapper prime = generatePrime(password, salt);
+        KeyParameterWrapper secondary = longTermKeyParameterFactory.getExpirableKeyParameterWrapper(new KeyParameter(decrypter.decryptBytes(prime, encryptedSecondary)), null);
+        prime.expire();
+        return new SecondaryKey(secondary, encryptedSecondary);
     }
 
     /**

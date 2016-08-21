@@ -46,14 +46,6 @@ public abstract class KeyParameterFactory {
         return generate(password, stringToBytes(salt));
     }
 
-    protected ExpirationHandler generateExpirationHandler(KeyParameterWrapper keyParameterWrapper) {
-        if (expirationInMills > 0) {
-            return new StandardExpirationHandler(expirationInMills, timer, keyParameterWrapper);
-        } else {
-            return new NoopExpirationHandler();
-        }
-    }
-
     /**
      * Only can be used once. The password will have to be reset
      *
@@ -65,8 +57,16 @@ public abstract class KeyParameterFactory {
         logger.debug("generate()");
         byte[] hashedPassword = hasher.generateHash(password, salt).getHash();
         KeyParameter keyParameter = new KeyParameter(hashedPassword);
+        return getExpirableKeyParameterWrapper(keyParameter, salt);
+    }
+
+    public KeyParameterWrapper getExpirableKeyParameterWrapper(KeyParameter keyParameter, byte[] salt) {
         KeyParameterWrapper secretKeyWrapper = new KeyParameterWrapper(keyParameter, salt);
-        generateExpirationHandler(secretKeyWrapper);
+        if (expirationInMills > 0) {
+            new StandardExpirationHandler(expirationInMills, timer, secretKeyWrapper);
+        } else {
+            new NoopExpirationHandler();
+        }
         return secretKeyWrapper;
     }
 
@@ -90,6 +90,11 @@ public abstract class KeyParameterFactory {
 
     public KeyParameter generateRandom256KeyParameter() {
         return generateRandomKeyParameter(256 / 8);
+    }
+
+    public KeyParameterWrapper generateRandom256KeyParameterWrapper() {
+        KeyParameter keyParameter = generateRandom256KeyParameter();
+        return getExpirableKeyParameterWrapper(keyParameter, null);
     }
 
     public static abstract class AbstractKeyParameterFactoryBuilder<T extends KeyParameterFactory> {

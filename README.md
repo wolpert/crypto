@@ -54,12 +54,23 @@ Comment on the github page if you have any suggestions.
 
 ## Expected Use-case ##
 
-The base use-case here is that the SCrypt-hashed key is used to encrypt the key-storage
-file. The key-storage file contains random keys generated for individual encrypted datasets.
-A dataset would be something like access to a website. But importantly, each dataset
-has its own key and is unique.
+Using the ParanoidManager, we hash your password and salt using SCrypt to create an AES key, known as
+Primary. Primary is used to during the encryption process of truly randomly-created AES keys that store
+your content, which are knows as Secondary. These Secondary keys encrypt the sensitive details, which
+in our typical example, is usernames and passwords.
+
+Primary is never long-lived in memory. Its purpose is to just provide access to a Secondary storage key.
+Secondary may live longer in memory, but once Secondary times out, Primary will need to be regenerated again
+from the users password and salt inorder to decrypt Secondary. This reduces the time where the password
+and salt exist in memory.
+
+Nothing stops multiple Secondary keys to exist, in fact, saving the details should regenerate new Secondary
+keys over time.
 
 ## Sample Usage ##
+
+You do not have to use this library in the manner described above. Here are some
+low-level ways to use the available pieces.
 
 #### Encryption ####
 
@@ -81,10 +92,10 @@ the encrypted content via the toString() method on the EncryptedByteHolder.
         String clearText = "Super Important Text";
         KeyParameterWrapper parameterWrapper = new ParanoidKeyParameterFactory.Builder().build().generate(password);
         Encrypter encrypter = new ParanoidEncrypter(parameterWrapper);
-        EncryptedByteHolder encryptBytes = encrypter.encryptBytes(clearText);
+        byte[] encryptBytes = encrypter.encryptBytes(clearText);
         String salt = encryptKeyParameterWrapper.getSaltAsString()
         
-        String stringVersionOfEncryptedBytes = encryptBytes.toString()
+        String stringVersionOfEncryptedBytes = Utilities.bytesToString(encryptBytes)
         
 #### Decryption ####
 
@@ -92,16 +103,19 @@ Here, we used the same password and the previous used salt to decrypt the text.
 We regenerate the EncryptedByteHolder from the previous string conversion of
 the encrypted bytes.
 
-        byte[] encryptedBytes = EncryptedByteHolder.fromString(stringVersionOfEncryptedBytes)
+        byte[] encryptedBytes = Utilities.stringToBytes(stringVersionOfEncryptedBytes)
         Decrypter decrypter = new ParanoidDecrypter(new ParanoidKeyParameterFactory.Builder().build().generate(password, salt));
         String decryptedText = decrypter.decryptText(encryptBytes);
 
 #### Compression ####
 
 The library does not compress strings automatically. You may want to in order to
-save space.  Remember, this library is not intended to be fast. It is intended to
+save space or to reduce details exposed with encrypted compressed strings.
+Remember, this library is not intended to be fast. It is intended to
 be secure. So do not worry about any speed hit with compression. It is the least
 of your problems.
+
+Note that the ObjectConverter does provide a compression routine.
 
 #### Misc ####
 
