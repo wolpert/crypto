@@ -28,10 +28,10 @@ public class ParanoidManager {
     private final KeyParameterFactory longTermKeyParameterFactory; // used for the longer term password file
     private final Encrypter encrypter;
     private final Decrypter decrypter;
-    private final ObjectConverter objectConverter;
+    private final ObjectManipulator objectManipulator;
 
     public ParanoidManager() {
-        objectConverter = new ObjectConverter();
+        objectManipulator = new ObjectManipulator();
         timerProvider = new DefaultTimerProvider();
         encrypter = new ParanoidEncrypter();
         decrypter = new ParanoidDecrypter();
@@ -49,11 +49,15 @@ public class ParanoidManager {
         return shortTermKeyParameterFactory.generate(password, salt);
     }
 
+    public byte[] freshSalt() {
+        return shortTermKeyParameterFactory.getSalt();
+    }
+
     public SecondaryKey generateFreshSecondary(String password, byte[] salt) throws SecretKeyExpiredException {
         KeyParameterWrapper prime = generatePrime(password, salt);
         KeyParameterWrapper secondary = longTermKeyParameterFactory.generateRandom256KeyParameterWrapper();
-        prime.expire();
         byte[] encryptedSecondary = encrypter.encryptBytes(prime, secondary.getKeyParameter().getKey());
+        prime.expire();
         return new SecondaryKey(secondary, encryptedSecondary);
     }
 
@@ -73,14 +77,14 @@ public class ParanoidManager {
      * @throws IOException
      * @throws SecretKeyExpiredException
      */
-    public byte[] encode(SensitiveDetails sensitiveDetails, KeyParameterWrapper keyParameterWrapper) throws IOException, SecretKeyExpiredException {
-        byte[] compressedBytes = objectConverter.toByteArray(sensitiveDetails);
+    public byte[] encode(String sensitiveDetails, KeyParameterWrapper keyParameterWrapper) throws IOException, SecretKeyExpiredException {
+        byte[] compressedBytes = objectManipulator.compressString(sensitiveDetails);
         return encrypter.encryptBytes(keyParameterWrapper, compressedBytes);
     }
 
-    public SensitiveDetails decodeSensitiveDetails(byte[] array, KeyParameterWrapper keyParameterWrapper) throws IOException, SecretKeyExpiredException {
+    public String decodeSensitiveDetails(byte[] array, KeyParameterWrapper keyParameterWrapper) throws IOException, SecretKeyExpiredException {
         byte[] decryptedContent = decrypter.decryptBytes(keyParameterWrapper, array);
-        return objectConverter.fromByteArray(decryptedContent, SensitiveDetails.class);
+        return objectManipulator.uncompressString(decryptedContent);
     }
 
 }

@@ -1,6 +1,5 @@
 package com.codeheadsystems.crypto;
 
-import com.codeheadsystems.crypto.cipher.EncryptedByteHolder;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 

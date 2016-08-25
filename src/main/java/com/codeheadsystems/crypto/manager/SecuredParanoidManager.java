@@ -4,7 +4,7 @@ import com.codeheadsystems.crypto.Utilities;
 
 /**
  * This version only differs from the ParanoidManager by enforcing the SecureRandomProvider
- *
+ * <p/>
  * BSD-Style License 2016
  */
 public class SecuredParanoidManager extends ParanoidManager {

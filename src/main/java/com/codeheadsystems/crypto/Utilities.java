@@ -114,9 +114,9 @@ public class Utilities {
     // Extra paranoia mode.... always clears
     // bytes, and returns a null
     public static byte[] clear(byte[] array) {
-        if (array!=null){
-            for(int i=0;i<array.length;i++) {
-                array[i]=0;
+        if (array != null) {
+            for (int i = 0; i < array.length; i++) {
+                array[i] = 0;
             }
         }
         return null;

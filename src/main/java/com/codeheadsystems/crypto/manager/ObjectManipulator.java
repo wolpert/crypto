@@ -1,7 +1,5 @@
 package com.codeheadsystems.crypto.manager;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,17 +13,12 @@ import static com.codeheadsystems.crypto.Utilities.getCharset;
  * <p/>
  * BSD-Style License 2016
  */
-public class ObjectConverter {
+public class ObjectManipulator {
 
-    private final ObjectMapper objectMapper;
-
-    public ObjectConverter() {
-        objectMapper = new ObjectMapper();
+    public ObjectManipulator() {
     }
 
-    public byte[] toByteArray(Object obj) throws IOException {
-        final String jsonString = objectMapper.writeValueAsString(obj);
-        final byte[] uncompressedBytes = jsonString.getBytes(getCharset());
+    public byte[] compress(byte[] uncompressedBytes) throws IOException {
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
         gzipOutputStream.write(uncompressedBytes);
@@ -34,8 +27,7 @@ public class ObjectConverter {
         return byteArrayOutputStream.toByteArray();
     }
 
-    // TODO: clazz seems redundant
-    public <T> T fromByteArray(byte[] compressedData, Class<T> clazz) throws IOException {
+    public byte[] uncompress(byte[] compressedData) throws IOException {
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedData);
         final GZIPInputStream gzipInputStream = new GZIPInputStream(byteArrayInputStream);
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -46,11 +38,17 @@ public class ObjectConverter {
                 byteArrayOutputStream.write(array, 0, read);
                 read = gzipInputStream.read(array);
             }
-            byte[] uncompressed = byteArrayOutputStream.toByteArray();
-            String json = new String(uncompressed, getCharset());
-            return objectMapper.readValue(json, clazz);
+            return byteArrayOutputStream.toByteArray();
         } finally {
             gzipInputStream.close();
         }
+    }
+
+    public byte[] compressString(String string) throws IOException {
+        return compress(string.getBytes(getCharset()));
+    }
+
+    public String uncompressString(byte[] bytes) throws IOException {
+        return new String(uncompress(bytes), getCharset());
     }
 }

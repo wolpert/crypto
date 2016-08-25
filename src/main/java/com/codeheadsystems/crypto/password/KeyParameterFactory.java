@@ -39,7 +39,11 @@ public abstract class KeyParameterFactory {
     }
 
     public KeyParameterWrapper generate(String password) {
-        return generate(password, Utilities.randomBytes(16));
+        return generate(password, getSalt());
+    }
+
+    public byte[] getSalt() {
+        return Utilities.randomBytes(16);
     }
 
     public KeyParameterWrapper generate(String password, String salt) {

@@ -16,7 +16,6 @@ ext {
     slf4jVersion = "1.7.21"
     logbackVersion = "1.1.7"
     bouncyVersion = "1.54"
-    jacksonVersion = "2.7.5"
 }
 repositories {
     jcenter()
@@ -27,8 +26,6 @@ dependencies {
     compile "ch.qos.logback:logback-classic:${logbackVersion}"
     compile "ch.qos.logback:logback-core:${logbackVersion}"
     compile "org.bouncycastle:bcprov-jdk15on:${bouncyVersion}"
-    compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
-    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 }
 
 

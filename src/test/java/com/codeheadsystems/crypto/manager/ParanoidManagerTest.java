@@ -9,12 +9,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
+import static com.codeheadsystems.crypto.Utilities.getCharset;
 import static com.codeheadsystems.crypto.Utilities.getUuid;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.assertFalse;
 
 /**
  * BSD-Style License 2016
@@ -37,31 +37,38 @@ public class ParanoidManagerTest {
 
     @Test
     public void testSensitiveDetails() throws IOException, SecretKeyExpiredException {
-        String username = "uname";
-        String password = "pw054";
-        String note = "This is not a test";
-        String id = getUuid();
-        Map<String, String> attr = new HashMap<>();
-        attr.put("a", "A");
-        attr.put("b", "B");
-        SensitiveDetails sensitiveDetails1 = new SensitiveDetails(username, password, note, id, attr);
-        byte[] bytes = paranoidManager.encode(sensitiveDetails1, keyParameterWrapper);
-        SensitiveDetails sensitiveDetails2 = paranoidManager.decodeSensitiveDetails(bytes, keyParameterWrapper);
+        String id1 = getUuid();
+        byte[] bytes = paranoidManager.encode(id1, keyParameterWrapper);
+        String id2 = paranoidManager.decodeSensitiveDetails(bytes, keyParameterWrapper);
 
-        assertEquals(username, sensitiveDetails1.getUsername());
-        assertEquals(password, sensitiveDetails1.getPassword());
-        assertEquals(note, sensitiveDetails1.getNotes());
-        assertEquals(id, sensitiveDetails1.getId());
-        for (Map.Entry<String, String> entry : attr.entrySet()) {
-            assertTrue(entry.getValue().equals(sensitiveDetails1.getAttr().get(entry.getKey())));
-        }
+        assertEquals(id1, id2);
+        assertFalse(id1.equals(new String(bytes, getCharset())));
+    }
 
-        assertEquals(username, sensitiveDetails2.getUsername());
-        assertEquals(password, sensitiveDetails2.getPassword());
-        assertEquals(note, sensitiveDetails2.getNotes());
-        assertEquals(id, sensitiveDetails2.getId());
-        for (Map.Entry<String, String> entry : attr.entrySet()) {
-            assertTrue(entry.getValue().equals(sensitiveDetails2.getAttr().get(entry.getKey())));
+    @Test
+    public void testKeyManagement() throws SecretKeyExpiredException {
+        String password = "password";
+        byte[] salt = paranoidManager.freshSalt();
+        SecondaryKey secondary = paranoidManager.generateFreshSecondary(password, salt);
+        assertNotNull(secondary.getEncryptedKey());
+        assertNotNull(secondary.getKeyParameterWrapper());
+        byte[] k1 = secondary.getKeyParameterWrapper().getKeyParameter().getKey();
+        assertNotNull(k1);
+
+        SecondaryKey redo = paranoidManager.regenerateSecondary(password, salt, secondary.getEncryptedKey());
+        byte[] ek1 = secondary.getEncryptedKey();
+        byte[] ek2 = redo.getEncryptedKey();
+        assertEqualByteArrays(ek1, ek2);
+        byte[] k2 = redo.getKeyParameterWrapper().getKeyParameter().getKey();
+        assertEqualByteArrays(k1, k2);
+    }
+
+    public void assertEqualByteArrays(byte[] b1, byte[] b2) {
+        assertNotNull(b1);
+        assertNotNull(b2);
+        assertEquals(b1.length, b2.length);
+        for(int i=0;i<b1.length;i++) {
+            assertEquals(b1[i], b2[i]);
         }
     }
 }
