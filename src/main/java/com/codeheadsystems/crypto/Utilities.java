@@ -63,12 +63,11 @@ public class Utilities {
         if (a1 == null || a2 == null || a1.length != a2.length) {
             return false;
         }
+        boolean result = true;
         for (int i = 0; i < a1.length; i++) {
-            if (a1[i] != a2[i]) {
-                return false;
-            }
+            result = (a1[i] == a2[i]) && result;
         }
-        return true;
+        return result;
     }
 
     public static byte[] randomBytes(int size) {
