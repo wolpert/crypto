@@ -39,7 +39,7 @@ public class ParanoidManagerTest {
     public void testSensitiveDetails() throws IOException, SecretKeyExpiredException {
         String id1 = getUuid();
         byte[] bytes = paranoidManager.encode(id1, keyParameterWrapper);
-        String id2 = paranoidManager.decodeSensitiveDetails(bytes, keyParameterWrapper);
+        String id2 = paranoidManager.decode(bytes, keyParameterWrapper);
 
         assertEquals(id1, id2);
         assertFalse(id1.equals(new String(bytes, getCharset())));

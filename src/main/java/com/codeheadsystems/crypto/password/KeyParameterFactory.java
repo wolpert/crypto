@@ -9,8 +9,6 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Timer;
 
 import static com.codeheadsystems.crypto.Utilities.stringToBytes;
@@ -47,7 +45,13 @@ public abstract class KeyParameterFactory {
     }
 
     /**
-     * Only can be used once. The password will have to be reset
+     * Hashes the password and salt together to create a secure key that can be
+     * used for AES encryption. The salt can be generated from this class, but you
+     * need to store the salt and re-use it when using this password to decrypt the content.
+     *
+     * @param password The super-secret password from the end user
+     * @param salt The one-time use salt that should be stored with the content being encrypted.
+     * @return an AES key wrapped with an expiration wrapper, if the key factory was configured to create expiring keys
      */
     public KeyParameterWrapper generate(String password, byte[] salt) {
         logger.debug("generate()");
@@ -77,8 +81,8 @@ public abstract class KeyParameterFactory {
      * This will return an keyParameterWrapper with no salt. No expiration monitor is set
      * for this keyParameterWrapper.
      *
-     * @param keysizeInBytes
-     * @return
+     * @param keysizeInBytes how many bytes to use. Must be value for AES keys
+     * @return a random keyParameter
      */
     public KeyParameter generateRandomKeyParameter(int keysizeInBytes) {
         return new KeyParameter(generateRandomKey(keysizeInBytes));

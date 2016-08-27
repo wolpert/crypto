@@ -21,7 +21,6 @@ import java.io.IOException;
  */
 public class ParanoidManager {
 
-    private final TimerProvider timerProvider;
     private final KeyParameterFactory shortTermKeyParameterFactory; // used for short-lived passwords decoding
     private final KeyParameterFactory longTermKeyParameterFactory; // used for the longer term password file
     private final Encrypter encrypter;
@@ -30,7 +29,7 @@ public class ParanoidManager {
 
     public ParanoidManager() {
         objectManipulator = new ObjectManipulator();
-        timerProvider = new DefaultTimerProvider();
+        TimerProvider timerProvider = new DefaultTimerProvider();
         encrypter = new ParanoidEncrypter();
         decrypter = new ParanoidDecrypter();
         KeyParameterFactory.AbstractKeyParameterFactoryBuilder builder = new ParanoidKeyParameterFactory.Builder();
@@ -69,18 +68,18 @@ public class ParanoidManager {
     /**
      * End result is a encoded packet only the KeyParameterWrapper can decrypt
      *
-     * @param sensitiveDetails
-     * @param keyParameterWrapper
-     * @return
-     * @throws IOException
-     * @throws SecretKeyExpiredException
+     * @param sensitiveDetails Some string that needs encrypting
+     * @param keyParameterWrapper The secret key to use for the encryption process
+     * @return encrypted byte array suitable for storage
+     * @throws IOException from compression failures
+     * @throws SecretKeyExpiredException should the keyParameterWrapper already expired
      */
     public byte[] encode(String sensitiveDetails, KeyParameterWrapper keyParameterWrapper) throws IOException, SecretKeyExpiredException {
         byte[] compressedBytes = objectManipulator.compressString(sensitiveDetails);
         return encrypter.encryptBytes(keyParameterWrapper, compressedBytes);
     }
 
-    public String decodeSensitiveDetails(byte[] array, KeyParameterWrapper keyParameterWrapper) throws IOException, SecretKeyExpiredException {
+    public String decode(byte[] array, KeyParameterWrapper keyParameterWrapper) throws IOException, SecretKeyExpiredException {
         byte[] decryptedContent = decrypter.decryptBytes(keyParameterWrapper, array);
         return objectManipulator.uncompressString(decryptedContent);
     }
