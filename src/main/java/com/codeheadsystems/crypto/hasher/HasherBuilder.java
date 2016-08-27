@@ -1,13 +1,9 @@
 package com.codeheadsystems.crypto.hasher;
 
 import com.codeheadsystems.crypto.Hasher;
-import com.codeheadsystems.crypto.Utilities;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.Charset;
-
-import static com.codeheadsystems.crypto.Utilities.getCharset;
 
 /**
  * BSD-Style License 2016
@@ -49,8 +45,7 @@ public class HasherBuilder {
     }
 
     public Hasher build() {
-        Charset usableCharset = getCharset();
-        HasherConfiguration hasherConfiguration = new HasherConfiguration(digest, saltSize, iterations, usableCharset);
+        HasherConfiguration hasherConfiguration = new HasherConfiguration(digest, saltSize, iterations);
         HasherProvider hasherProvider = getHasherProvider();
         return hasherProvider.getHasher(hasherConfiguration);
     }

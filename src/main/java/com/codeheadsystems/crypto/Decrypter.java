@@ -10,9 +10,13 @@ import org.bouncycastle.crypto.params.KeyParameter;
  */
 public interface Decrypter {
 
+    String decryptText(KeyParameterWrapper keyParameterWrapper, String encryptedText) throws CryptoException, SecretKeyExpiredException;
+
     String decryptText(KeyParameterWrapper keyParameterWrapper, byte[] encryptedBytes) throws CryptoException, SecretKeyExpiredException;
 
     byte[] decryptBytes(KeyParameterWrapper keyParameterWrapper, byte[] encryptedBytes) throws CryptoException, SecretKeyExpiredException;
+
+    String decryptText(KeyParameter keyParameter, String encryptedText) throws CryptoException;
 
     String decryptText(KeyParameter keyParameter, byte[] encryptedBytes) throws CryptoException;
 

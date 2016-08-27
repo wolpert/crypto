@@ -63,7 +63,7 @@ public class ParanoidManager {
 
     public SecondaryKey regenerateSecondary(String password, byte[] salt, byte[] encryptedSecondary) throws SecretKeyExpiredException {
         KeyParameterWrapper prime = generatePrime(password, salt);
-        KeyParameterWrapper secondary = longTermKeyParameterFactory.getExpirableKeyParameterWrapper(new KeyParameter(decrypter.decryptBytes(prime, encryptedSecondary)), null);
+        KeyParameterWrapper secondary = longTermKeyParameterFactory.getExpirableKeyParameterWrapper(new KeyParameter(decrypter.decryptBytes(prime, encryptedSecondary)));
         prime.expire();
         return new SecondaryKey(secondary, encryptedSecondary);
     }

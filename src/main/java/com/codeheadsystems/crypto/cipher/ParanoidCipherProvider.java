@@ -14,8 +14,8 @@ import static com.codeheadsystems.crypto.Utilities.randomBytes;
  */
 public class ParanoidCipherProvider implements CipherProvider {
 
-    private final static Logger logger = LoggerFactory.getLogger(ParanoidCipherProvider.class);
     public final static int BLOCK_LENGTH = 16;
+    private final static Logger logger = LoggerFactory.getLogger(ParanoidCipherProvider.class);
 
     @Override
     public PaddedBufferedBlockCipher getCipher() {

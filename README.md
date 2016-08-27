@@ -92,14 +92,17 @@ The EncryptedByteHolder contains the encrypted bytes itself and the initializati
 used. Both are needed to decrypt the content. You can retrieve a string representation of
 the encrypted content via the toString() method on the EncryptedByteHolder.
 
-        String password = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
         String clearText = "Super Important Text";
-        KeyParameterWrapper parameterWrapper = new ParanoidKeyParameterFactory.Builder().build().generate(password);
-        Encrypter encrypter = new ParanoidEncrypter(parameterWrapper);
-        byte[] encryptBytes = encrypter.encryptBytes(clearText);
-        String salt = encryptKeyParameterWrapper.getSaltAsString()
-        
-        String stringVersionOfEncryptedBytes = Utilities.bytesToString(encryptBytes)
+        KeyParameterFactory factory = new ParanoidKeyParameterFactory.Builder()
+                .timerProvider(new DefaultTimerProvider())
+                .expirationInMills(20000) // Expire keys in 20 seconds
+                .build();
+        String password = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
+        byte[] salt = factory.getSalt();
+        KeyParameterWrapper key = factory.generate(password, salt);
+        Encrypter encrypter = new ParanoidEncrypter();
+        byte[] encryptBytes = encrypter.encryptBytes(key, clearText);
+        String stringVersionOfEncryptedBytes = Utilities.bytesToString(encryptBytes);
         
 #### Decryption ####
 
@@ -107,9 +110,10 @@ Here, we used the same password and the previous used salt to decrypt the text.
 We regenerate the EncryptedByteHolder from the previous string conversion of
 the encrypted bytes.
 
-        byte[] encryptedBytes = Utilities.stringToBytes(stringVersionOfEncryptedBytes)
-        Decrypter decrypter = new ParanoidDecrypter(new ParanoidKeyParameterFactory.Builder().build().generate(password, salt));
-        String decryptedText = decrypter.decryptText(encryptBytes);
+        byte[] encryptedBytes = Utilities.stringToBytes(stringVersionOfEncryptedBytes);
+        key = factory.generate(password, salt); // regenerate key if previous one expired
+        Decrypter decrypter = new ParanoidDecrypter();
+        String decryptedText = decrypter.decryptText(key, encryptedBytes);
 
 #### Compression ####
 

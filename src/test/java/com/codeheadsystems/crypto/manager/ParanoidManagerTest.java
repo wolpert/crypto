@@ -32,7 +32,7 @@ public class ParanoidManagerTest {
     @Before
     public void init() throws ParanoidManagerException {
         paranoidManager = new ParanoidManager();
-        keyParameterWrapper = new KeyParameterWrapper(paranoidManager.generateRandomAesKey(), null);
+        keyParameterWrapper = new KeyParameterWrapper(paranoidManager.generateRandomAesKey());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class ParanoidManagerTest {
         assertNotNull(b1);
         assertNotNull(b2);
         assertEquals(b1.length, b2.length);
-        for(int i=0;i<b1.length;i++) {
+        for (int i = 0; i < b1.length; i++) {
             assertEquals(b1[i], b2[i]);
         }
     }

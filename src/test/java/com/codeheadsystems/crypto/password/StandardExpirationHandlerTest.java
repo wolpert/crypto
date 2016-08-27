@@ -29,9 +29,9 @@ public class StandardExpirationHandlerTest {
                 .timerProvider(timerProvider)
                 .expirationInMills(400)
                 .build();
-        KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD); // no salt
+        byte[] salt = keyParameterFactory.getSalt();
+        KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt);
         assertNotNull(keyParameterWrapper.getKeyParameter());
-        assertNotNull(keyParameterWrapper.getSalt());
         Thread.sleep(500);
         try {
             keyParameterWrapper.getKeyParameter();
@@ -47,7 +47,8 @@ public class StandardExpirationHandlerTest {
                 .timerProvider(timerProvider)
                 .expirationInMills(500)
                 .build();
-        KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD); // no salt
+        byte[] salt = keyParameterFactory.getSalt();
+        KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt);
         assertNotNull(keyParameterWrapper.getKeyParameter());
     }
 
@@ -57,7 +58,8 @@ public class StandardExpirationHandlerTest {
                 .timerProvider(timerProvider)
                 .expirationInMills(0)
                 .build();
-        KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD); // no salt
+        byte[] salt = keyParameterFactory.getSalt();
+        KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt); // no salt
         assertNotNull(keyParameterWrapper.getKeyParameter());
     }
 
@@ -67,7 +69,8 @@ public class StandardExpirationHandlerTest {
                 .timerProvider(timerProvider)
                 .expirationInMills(50)
                 .build();
-        KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD); // no salt
+        byte[] salt = keyParameterFactory.getSalt();
+        KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt); // no salt
         Thread.sleep(100);
         assertNotNull(keyParameterWrapper.getKeyParameter());
     }

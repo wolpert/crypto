@@ -5,7 +5,6 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.codeheadsystems.crypto.Utilities.getCharset;
-import static com.codeheadsystems.crypto.Utilities.getUuid;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 

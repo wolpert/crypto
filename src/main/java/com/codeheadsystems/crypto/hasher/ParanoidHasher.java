@@ -26,8 +26,8 @@ public class ParanoidHasher implements Hasher {
     protected final int p = 1;
 
     public ParanoidHasher(HasherConfiguration hasherConfiguration) {
-        saltSize = hasherConfiguration.saltSize;
-        iterations = hasherConfiguration.iterations;
+        saltSize = hasherConfiguration.getSaltSize();
+        iterations = hasherConfiguration.getIterations();
         logger.debug("Paranoid scrypt: n=" + iterations + " r=" + r + " p=" + p);
     }
 
@@ -38,7 +38,7 @@ public class ParanoidHasher implements Hasher {
     @Override
     public String getDigest() {
         return "scrypt";
-    }
+    } // Ignore what is in the config
 
     @Override
     public HashHolder generateHash(String unhashedString) {

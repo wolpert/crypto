@@ -6,8 +6,6 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.codeheadsystems.crypto.Utilities.bytesToString;
-
 /**
  * When you read the password from the user, generate this wrapper right away and do not store
  * the password. The wrapper will (eventually) have the ability to expire requiring the user to
@@ -19,11 +17,9 @@ public class KeyParameterWrapper {
 
     private volatile ExpirationHandler expirationHandler;
     private volatile KeyParameter keyParameter;
-    private byte[] salt;
 
-    public KeyParameterWrapper(KeyParameter keyParameter, byte[] salt) {
+    public KeyParameterWrapper(KeyParameter keyParameter) {
         this.keyParameter = keyParameter;
-        this.salt = salt;
     }
 
     public void setExpirationHandler(ExpirationHandler expirationHandler) {
@@ -42,10 +38,6 @@ public class KeyParameterWrapper {
         return keyParameter;
     }
 
-    public byte[] getSalt() {
-        return salt;
-    }
-
     // TODO: readers-writers block instead of synchronized
     public synchronized void expire() {
         if (keyParameter != null) {
@@ -56,9 +48,5 @@ public class KeyParameterWrapper {
         } else {
             logger.debug("expire() already expired");
         }
-    }
-
-    public String getSaltAsString() {
-        return bytesToString(salt);
     }
 }

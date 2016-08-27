@@ -38,10 +38,6 @@ public abstract class KeyParameterFactory {
         this.randomProvider = Utilities.getRandomProvider();
     }
 
-    public KeyParameterWrapper generate(String password) {
-        return generate(password, getSalt());
-    }
-
     public byte[] getSalt() {
         return Utilities.randomBytes(16);
     }
@@ -61,11 +57,11 @@ public abstract class KeyParameterFactory {
         logger.debug("generate()");
         byte[] hashedPassword = hasher.generateHash(password, salt).getHash();
         KeyParameter keyParameter = new KeyParameter(hashedPassword);
-        return getExpirableKeyParameterWrapper(keyParameter, salt);
+        return getExpirableKeyParameterWrapper(keyParameter);
     }
 
-    public KeyParameterWrapper getExpirableKeyParameterWrapper(KeyParameter keyParameter, byte[] salt) {
-        KeyParameterWrapper secretKeyWrapper = new KeyParameterWrapper(keyParameter, salt);
+    public KeyParameterWrapper getExpirableKeyParameterWrapper(KeyParameter keyParameter) {
+        KeyParameterWrapper secretKeyWrapper = new KeyParameterWrapper(keyParameter);
         if (expirationInMills > 0) {
             new StandardExpirationHandler(expirationInMills, timer, secretKeyWrapper);
         } else {
@@ -98,7 +94,7 @@ public abstract class KeyParameterFactory {
 
     public KeyParameterWrapper generateRandom256KeyParameterWrapper() {
         KeyParameter keyParameter = generateRandom256KeyParameter();
-        return getExpirableKeyParameterWrapper(keyParameter, null);
+        return getExpirableKeyParameterWrapper(keyParameter);
     }
 
     public static abstract class AbstractKeyParameterFactoryBuilder<T extends KeyParameterFactory> {

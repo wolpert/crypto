@@ -23,6 +23,11 @@ public class ParanoidDecrypter extends ParanoidCipherProvider implements Decrypt
     private static final Logger logger = LoggerFactory.getLogger(ParanoidDecrypter.class);
 
     @Override
+    public String decryptText(KeyParameterWrapper keyParameterWrapper, String encryptedText) throws CryptoException, SecretKeyExpiredException {
+        return decryptText(keyParameterWrapper, encryptedText.getBytes(getCharset()));
+    }
+
+    @Override
     public String decryptText(KeyParameterWrapper keyParameterWrapper, byte[] encryptedBytes) throws CryptoException, SecretKeyExpiredException {
         return decryptText(keyParameterWrapper.getKeyParameter(), encryptedBytes);
     }
@@ -35,6 +40,11 @@ public class ParanoidDecrypter extends ParanoidCipherProvider implements Decrypt
     @Override
     public byte[] decryptBytes(KeyParameterWrapper keyParameterWrapper, byte[] encryptedBytes) throws CryptoException, SecretKeyExpiredException {
         return decryptBytes(keyParameterWrapper.getKeyParameter(), encryptedBytes);
+    }
+
+    @Override
+    public String decryptText(KeyParameter keyParameter, String encryptedText) throws CryptoException {
+        return decryptText(keyParameter, encryptedText.getBytes(getCharset()));
     }
 
     @Override
