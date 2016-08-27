@@ -17,7 +17,7 @@ group = "com.codeheadsystems"
 version = '0.5.0'
 
 ext {
-    junitVersion = "4.+"
+    junitVersion = "4.12"
     slf4jVersion = "1.7.21"
     logbackVersion = "1.1.7"
     bouncyVersion = "1.54"
@@ -38,6 +38,57 @@ artifacts {
     archivesBaseName = "crypto"
 }
 
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment ->
+                signing.signPom(deployment)
+
+            }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'Codehead Crypto Library'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'A set of libraries that can be used to encrypt content securely.'
+                url 'https://github.com/wolpert/crypto'
+
+                scm {
+                    connection 'scm:https://github.com/wolpert/crypto.git'
+                    developerConnection 'scm:git@github.com:wolpert/crypto.git'
+                    url 'https://github.com/wolpert/crypto/'
+                }
+
+                licenses {
+                    license {
+                        name 'The BSD License'
+                        url 'https://opensource.org/licenses/BSD-3-Clause'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'wolpert'
+                        name 'Ned Wolpert'
+                        email 'ned.wolpert@codeheadsystems.com'
+                    }
+                }
+            }
+        }
+    }
+}
 
 repositories {
     jcenter()
