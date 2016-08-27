@@ -17,8 +17,6 @@ import java.io.IOException;
 
 /**
  * Effectively a facade around the paranoid facilities.
- * <p/>
- * <p/>
  * BSD-Style License 2016
  */
 public class ParanoidManager {

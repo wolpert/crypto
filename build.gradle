@@ -10,13 +10,35 @@ buildscript {
 }
 
 apply plugin: "java"
-version = '0.0.1'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+group = "com.codeheadsystems"
+version = '0.5.0'
+
 ext {
     junitVersion = "4.+"
     slf4jVersion = "1.7.21"
     logbackVersion = "1.1.7"
     bouncyVersion = "1.54"
 }
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+    archivesBaseName = "crypto"
+}
+
+
 repositories {
     jcenter()
 }

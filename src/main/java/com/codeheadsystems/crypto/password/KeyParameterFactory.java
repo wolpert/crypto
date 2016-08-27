@@ -48,10 +48,6 @@ public abstract class KeyParameterFactory {
 
     /**
      * Only can be used once. The password will have to be reset
-     *
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
      */
     public KeyParameterWrapper generate(String password, byte[] salt) {
         logger.debug("generate()");

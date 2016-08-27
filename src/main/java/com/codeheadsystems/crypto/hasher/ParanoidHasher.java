@@ -12,7 +12,6 @@ import static com.codeheadsystems.crypto.Utilities.randomBytes;
 
 /**
  * Uses bouncy castle version of scrypt. Basically ignores most of the configuration
- * <p/>
  * BSD-Style License 2016
  */
 public class ParanoidHasher implements Hasher {

@@ -1,8 +1,7 @@
 package com.codeheadsystems.crypto.password;
 
 /**
- * Only used if the secretKey expired in session
- * <p/>
+ * Only used if the secretKey expired in session.
  * BSD-Style License 2016
  */
 public class SecretKeyExpiredException extends Exception {

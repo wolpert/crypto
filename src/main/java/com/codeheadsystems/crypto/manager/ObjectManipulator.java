@@ -9,8 +9,7 @@ import java.util.zip.GZIPOutputStream;
 import static com.codeheadsystems.crypto.Utilities.getCharset;
 
 /**
- * Provides the ability to convert objects from typeA to compressed bytes and back again
- * <p/>
+ * Provides the ability to convert objects from typeA to compressed bytes and back again.
  * BSD-Style License 2016
  */
 public class ObjectManipulator {
