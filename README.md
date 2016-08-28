@@ -52,6 +52,17 @@ Actually, do not trust me. Look at the code. See what it does and how it does it
 The encryption routines are fairly basic. The Hashing component will become simpler.
 Comment on the github page if you have any suggestions.
 
+## Gradle ##
+    compile "com.codeheadsystems:crypto:0.5.0"
+
+## Maven ##
+
+    <dependency>
+      <groupId>com.codeheadsystems</groupId>
+      <artifactId>crypto</artifactId>
+      <version>0.5.0</version>
+    </dependency>
+
 ## Expected Use-case ##
 
 Using the ParanoidManager, we hash your password and salt using SCrypt to create an AES key, known as
