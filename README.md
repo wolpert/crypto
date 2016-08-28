@@ -53,13 +53,13 @@ The encryption routines are fairly basic. The Hashing component will become simp
 Comment on the github page if you have any suggestions.
 
 ## Gradle ##
-    compile "com.codeheadsystems:crypto:0.5.0"
+    compile "com.codeheadsystems:crypto:0.6.0"
 
 ## Maven ##
     <dependency>
       <groupId>com.codeheadsystems</groupId>
       <artifactId>crypto</artifactId>
-      <version>0.5.0</version>
+      <version>0.6.0</version>
     </dependency>
 
 ## Expected Use-case ##
