@@ -3,7 +3,7 @@ package com.codeheadsystems.crypto;
 /**
  * BSD-Style License 2016
  */
-public class CryptoException extends RuntimeException {
+public class CryptoException extends Exception {
     public CryptoException() {
         super();
     }

@@ -7,12 +7,14 @@ import com.codeheadsystems.crypto.password.KeyParameterWrapper;
  */
 public class SecondaryKey {
 
-    private KeyParameterWrapper keyParameterWrapper;
-    private byte[] encryptedKey;
+    private final KeyParameterWrapper keyParameterWrapper;
+    private final byte[] encryptedKey;
+    private final byte[] salt;
 
-    public SecondaryKey(KeyParameterWrapper keyParameterWrapper, byte[] encryptedKey) {
+    public SecondaryKey(KeyParameterWrapper keyParameterWrapper, byte[] encryptedKey, byte[] salt) {
         this.keyParameterWrapper = keyParameterWrapper;
         this.encryptedKey = encryptedKey;
+        this.salt = salt;
     }
 
     public KeyParameterWrapper getKeyParameterWrapper() {
@@ -21,5 +23,9 @@ public class SecondaryKey {
 
     public byte[] getEncryptedKey() {
         return encryptedKey;
+    }
+
+    public byte[] getSalt() {
+        return salt;
     }
 }

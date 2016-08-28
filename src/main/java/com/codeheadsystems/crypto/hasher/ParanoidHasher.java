@@ -23,11 +23,12 @@ public class ParanoidHasher implements Hasher {
 
     protected final int r = 8;
     protected final int p = 1;
+    protected final int dkLen = 32; // bytes, not bits
 
     public ParanoidHasher(HasherConfiguration hasherConfiguration) {
         saltSize = hasherConfiguration.getSaltSize();
         iterations = hasherConfiguration.getIterations();
-        logger.debug("Paranoid scrypt: n=" + iterations + " r=" + r + " p=" + p);
+        logger.debug("Paranoid scrypt: n=" + iterations + " r=" + r + " p=" + p + " dkLen=" + dkLen);
     }
 
     public byte[] getSalt() {
@@ -58,7 +59,7 @@ public class ParanoidHasher implements Hasher {
 
     protected byte[] internalGenerateHash(String unhashedString, byte[] salt) {
         logger.debug("internalGenerateHash(,)");
-        return SCrypt.generate(getBytes(unhashedString), salt, iterations, r, p, 32); // 32 bytes, not 32 bits...
+        return SCrypt.generate(getBytes(unhashedString), salt, iterations, r, p, dkLen);
     }
 
 }

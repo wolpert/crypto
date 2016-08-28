@@ -56,7 +56,6 @@ Comment on the github page if you have any suggestions.
     compile "com.codeheadsystems:crypto:0.5.0"
 
 ## Maven ##
-
     <dependency>
       <groupId>com.codeheadsystems</groupId>
       <artifactId>crypto</artifactId>
@@ -76,13 +75,23 @@ from the users password and salt inorder to decrypt Secondary. This reduces the 
 and salt exist in memory.
 
 Nothing stops multiple Secondary keys to exist, in fact, saving the details should regenerate new Secondary
-keys over time.
+keys over time. Here is code example showing encryption
+
+            SecondaryKey key = manager.generateFreshSecondary(password);
+            byte[] encryptedkey = key.getEncryptedKey();
+            byte[] salt = key.getSalt();
+            byte[] encryptedText = manager.encode(clearText, key);
+
+And decryption
+
+            key = manager.regenerateSecondary(password, salt, encryptedkey);
+            String decodedText = manager.decode(encryptedText, key);
 
 NOTE: It is not determined if there is an advantage with using Secondary vs Prime to encode the base file.
 You still have to store the encrypted Secondary. Does that help the basis for attack? (Having the
 encrypted secondary and the file the unencrypted secondary encrypted?)
 
-## Sample Usage ##
+## Sample Low-level Usage ##
 
 You do not have to use this library in the manner described above. Here are some
 low-level ways to use the available pieces.

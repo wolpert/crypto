@@ -1,5 +1,6 @@
 package com.codeheadsystems.crypto.manager;
 
+import com.codeheadsystems.crypto.CryptoException;
 import com.codeheadsystems.crypto.Decrypter;
 import com.codeheadsystems.crypto.Encrypter;
 import com.codeheadsystems.crypto.cipher.ParanoidDecrypter;
@@ -16,10 +17,11 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import java.io.IOException;
 
 /**
- * Effectively a facade around the paranoid facilities.
+ * Effectively a facade around the paranoid facilities. Note that this class does not guarantee
+ * that the random provider is secure. Use SecureParanoidManager instead.
  * BSD-Style License 2016
  */
-public class ParanoidManager {
+public class ParanoidManager implements Manager {
 
     private final KeyParameterFactory shortTermKeyParameterFactory; // used for short-lived passwords decoding
     private final KeyParameterFactory longTermKeyParameterFactory; // used for the longer term password file
@@ -38,6 +40,7 @@ public class ParanoidManager {
         longTermKeyParameterFactory = builder.expirationInMills(10 * 60 * 1000).build(); // 10 mins
     }
 
+    @Override
     public KeyParameter generateRandomAesKey() {
         return shortTermKeyParameterFactory.generateRandom256KeyParameter();
     }
@@ -46,41 +49,38 @@ public class ParanoidManager {
         return shortTermKeyParameterFactory.generate(password, salt);
     }
 
+    @Override
     public byte[] freshSalt() {
         return shortTermKeyParameterFactory.getSalt();
     }
 
-    public SecondaryKey generateFreshSecondary(String password, byte[] salt) throws SecretKeyExpiredException {
+    @Override
+    public SecondaryKey generateFreshSecondary(String password) throws SecretKeyExpiredException, CryptoException {
+        byte[] salt = freshSalt();
         KeyParameterWrapper prime = generatePrime(password, salt);
         KeyParameterWrapper secondary = longTermKeyParameterFactory.generateRandom256KeyParameterWrapper();
         byte[] encryptedSecondary = encrypter.encryptBytes(prime, secondary.getKeyParameter().getKey());
         prime.expire();
-        return new SecondaryKey(secondary, encryptedSecondary);
+        return new SecondaryKey(secondary, encryptedSecondary, salt);
     }
 
-    public SecondaryKey regenerateSecondary(String password, byte[] salt, byte[] encryptedSecondary) throws SecretKeyExpiredException {
+    @Override
+    public SecondaryKey regenerateSecondary(String password, byte[] salt, byte[] encryptedSecondary) throws SecretKeyExpiredException, CryptoException {
         KeyParameterWrapper prime = generatePrime(password, salt);
         KeyParameterWrapper secondary = longTermKeyParameterFactory.getExpirableKeyParameterWrapper(new KeyParameter(decrypter.decryptBytes(prime, encryptedSecondary)));
         prime.expire();
-        return new SecondaryKey(secondary, encryptedSecondary);
+        return new SecondaryKey(secondary, encryptedSecondary, salt);
     }
 
-    /**
-     * End result is a encoded packet only the KeyParameterWrapper can decrypt
-     *
-     * @param sensitiveDetails Some string that needs encrypting
-     * @param keyParameterWrapper The secret key to use for the encryption process
-     * @return encrypted byte array suitable for storage
-     * @throws IOException from compression failures
-     * @throws SecretKeyExpiredException should the keyParameterWrapper already expired
-     */
-    public byte[] encode(String sensitiveDetails, KeyParameterWrapper keyParameterWrapper) throws IOException, SecretKeyExpiredException {
+    @Override
+    public byte[] encode(String sensitiveDetails, SecondaryKey secondaryKey) throws IOException, SecretKeyExpiredException, CryptoException {
         byte[] compressedBytes = objectManipulator.compressString(sensitiveDetails);
-        return encrypter.encryptBytes(keyParameterWrapper, compressedBytes);
+        return encrypter.encryptBytes(secondaryKey.getKeyParameterWrapper(), compressedBytes);
     }
 
-    public String decode(byte[] array, KeyParameterWrapper keyParameterWrapper) throws IOException, SecretKeyExpiredException {
-        byte[] decryptedContent = decrypter.decryptBytes(keyParameterWrapper, array);
+    @Override
+    public String decode(byte[] array, SecondaryKey secondaryKey) throws IOException, SecretKeyExpiredException, CryptoException {
+        byte[] decryptedContent = decrypter.decryptBytes(secondaryKey.getKeyParameterWrapper(), array);
         return objectManipulator.uncompressString(decryptedContent);
     }
 

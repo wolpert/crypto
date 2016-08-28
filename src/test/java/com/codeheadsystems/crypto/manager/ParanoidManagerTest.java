@@ -1,5 +1,6 @@
 package com.codeheadsystems.crypto.manager;
 
+import com.codeheadsystems.crypto.CryptoException;
 import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
@@ -21,7 +22,7 @@ import static junit.framework.TestCase.assertFalse;
  */
 public class ParanoidManagerTest {
 
-    private ParanoidManager paranoidManager;
+    private Manager manager;
     private KeyParameterWrapper keyParameterWrapper;
 
     @Before
@@ -31,36 +32,64 @@ public class ParanoidManagerTest {
 
     @Before
     public void init() throws ParanoidManagerException {
-        paranoidManager = new ParanoidManager();
-        keyParameterWrapper = new KeyParameterWrapper(paranoidManager.generateRandomAesKey());
+        manager = new ParanoidManager();
+        keyParameterWrapper = new KeyParameterWrapper(manager.generateRandomAesKey());
     }
 
     @Test
-    public void testSensitiveDetails() throws IOException, SecretKeyExpiredException {
+    public void testSensitiveDetails() throws IOException, SecretKeyExpiredException, CryptoException {
         String id1 = getUuid();
-        byte[] bytes = paranoidManager.encode(id1, keyParameterWrapper);
-        String id2 = paranoidManager.decode(bytes, keyParameterWrapper);
+        SecondaryKey secondaryKey = new SecondaryKey(keyParameterWrapper, null, null);
+        byte[] bytes = manager.encode(id1, secondaryKey);
+        String id2 = manager.decode(bytes, secondaryKey);
 
         assertEquals(id1, id2);
         assertFalse(id1.equals(new String(bytes, getCharset())));
     }
 
+    @Test(expected = CryptoException.class)
+    public void testEncodeFailure() throws IOException, SecretKeyExpiredException, CryptoException {
+        String id1 = getUuid();
+        SecondaryKey secondaryKey = new SecondaryKey(keyParameterWrapper, null, null);
+        byte[] bytes = manager.encode(id1, secondaryKey);
+        byte b = bytes[bytes.length - 1];
+        b = (b == Byte.MAX_VALUE ? Byte.MIN_VALUE : Byte.MAX_VALUE);
+        bytes[bytes.length - 1] = b;
+        manager.decode(bytes, secondaryKey);
+    }
+
     @Test
-    public void testKeyManagement() throws SecretKeyExpiredException {
+    public void testKeyManagement() throws SecretKeyExpiredException, CryptoException {
         String password = "password";
-        byte[] salt = paranoidManager.freshSalt();
-        SecondaryKey secondary = paranoidManager.generateFreshSecondary(password, salt);
+        SecondaryKey secondary = manager.generateFreshSecondary(password);
+        byte[] salt = secondary.getSalt();
         assertNotNull(secondary.getEncryptedKey());
         assertNotNull(secondary.getKeyParameterWrapper());
         byte[] k1 = secondary.getKeyParameterWrapper().getKeyParameter().getKey();
         assertNotNull(k1);
 
-        SecondaryKey redo = paranoidManager.regenerateSecondary(password, salt, secondary.getEncryptedKey());
+        SecondaryKey redo = manager.regenerateSecondary(password, salt, secondary.getEncryptedKey());
         byte[] ek1 = secondary.getEncryptedKey();
         byte[] ek2 = redo.getEncryptedKey();
         assertEqualByteArrays(ek1, ek2);
         byte[] k2 = redo.getKeyParameterWrapper().getKeyParameter().getKey();
         assertEqualByteArrays(k1, k2);
+    }
+
+    @Test
+    public void testDefaultUseCase() throws CryptoException, SecretKeyExpiredException, IOException {
+        String password = "password";
+        String clearText = "this is NOT a test";
+
+        SecondaryKey key = manager.generateFreshSecondary(password);
+        byte[] encryptedkey = key.getEncryptedKey();
+        byte[] salt = key.getSalt();
+        byte[] encryptedText = manager.encode(clearText, key);
+
+        key = manager.regenerateSecondary(password, salt, encryptedkey);
+        String decodedText = manager.decode(encryptedText, key);
+
+        assertEquals(clearText, decodedText);
     }
 
     public void assertEqualByteArrays(byte[] b1, byte[] b2) {
