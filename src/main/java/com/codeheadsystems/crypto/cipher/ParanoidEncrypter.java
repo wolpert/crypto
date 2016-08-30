@@ -6,7 +6,7 @@ import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
-import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
+import org.bouncycastle.crypto.modes.AEADBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public class ParanoidEncrypter extends ParanoidCipherProvider implements Encrypt
     public byte[] encryptBytes(KeyParameter keyParameter, byte[] bytes) throws CryptoException {
         logger.debug("encryptBytes()");
         try {
-            PaddedBufferedBlockCipher cipher = getCipher();
+            AEADBlockCipher cipher = getCipher();
             byte[] iv = getRandomIV();
 
             ParametersWithIV keyWithIv = new ParametersWithIV(keyParameter, iv);

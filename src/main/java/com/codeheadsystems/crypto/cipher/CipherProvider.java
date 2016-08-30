@@ -1,13 +1,13 @@
 package com.codeheadsystems.crypto.cipher;
 
-import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
+import org.bouncycastle.crypto.modes.AEADBlockCipher;
 
 /**
  * BSD-Style License 2016
  */
 public interface CipherProvider {
 
-    PaddedBufferedBlockCipher getCipher();
+    AEADBlockCipher getCipher();
 
     byte[] getRandomIV();
 }

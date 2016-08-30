@@ -3,12 +3,12 @@
 CodeHead's Crypto Library
 
 This library is the bases for encrypting other components that I'm using elsewhere.
-The goal is to make this as open as possible so if I do anything stupid, other
+The goal is to make this as open as possible so if I do anything wrong, other
 people can comment.
 
 ## TL; DR ##
 
-Password hashed with SCrypt. Encryption via AES-256, CTR Mode, PKCS7 Padding.
+Password hashed with SCrypt. Encryption via AES-256, GCM Mode, No Padding.
 Hashed passwords null out with inactivity.
 
 ## Supporting Strong Encryption ##
@@ -19,8 +19,8 @@ encrypted content. This does not handle trust, certs, or other cryptographic
 features that are needed for a robust solution.
 
 Passwords are hashed to generate the 256-bit key, which is used to encrypt and
-decrypt with the AES crypto library. [CTR/SIC](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Counter_.28CTR.29)
-for block chaining, and PKCS7 padding support. (Strings converted with UTF-16LE charset)
+decrypt with the AES crypto library. [GCM](https://en.wikipedia.org/wiki/Galois/Counter_Mode)
+is used for authenticated encryption. (Strings are converted with UTF-16LE charset)
 
 The Hashing technique can be picked by the user. The default Paranoid impl uses SCrypt, but
 the user can use a JCE-provided message digest, which we use SKEIN-512-256 by default.
@@ -53,13 +53,13 @@ The encryption routines are fairly basic. The Hashing component will become simp
 Comment on the github page if you have any suggestions.
 
 ## Gradle ##
-    compile "com.codeheadsystems:crypto:0.6.0"
+    compile "com.codeheadsystems:crypto:0.7.0"
 
 ## Maven ##
     <dependency>
       <groupId>com.codeheadsystems</groupId>
       <artifactId>crypto</artifactId>
-      <version>0.6.0</version>
+      <version>0.7.0</version>
     </dependency>
 
 ## Expected Use-case ##
