@@ -12,14 +12,13 @@ import static com.codeheadsystems.crypto.Utilities.randomBytes;
 /**
  * BSD-Style License 2016
  */
-public abstract class AbstractSaltedHasher<T> implements Hasher {
+public abstract class AbstractSaltedHasher implements Hasher {
 
     protected static Logger logger = LoggerFactory.getLogger(AbstractSaltedHasher.class);
 
     protected final String digest;
     protected final int saltSize;
     protected final int iterations;
-    protected final ThreadLocal<T> digesterThreadLocal = new ThreadLocal<>();
 
     public AbstractSaltedHasher(final HasherConfiguration hasherConfiguration) {
         logger.debug("AbstractSaltedHasher()");
@@ -38,8 +37,8 @@ public abstract class AbstractSaltedHasher<T> implements Hasher {
         return randomBytes(saltSize);
     }
 
-    protected byte[] getBytes(String hashedValue) {
-        return hashedValue.getBytes(getCharset());
+    protected byte[] getBytes(String string) {
+        return string.getBytes(getCharset());
     }
 
     @Override
@@ -47,7 +46,6 @@ public abstract class AbstractSaltedHasher<T> implements Hasher {
         HashHolder newlyHashedString = generateHash(unhashedString, hashedString.getSalt());
         return Utilities.isSame(hashedString.getHash(), newlyHashedString.getHash());
     }
-
 
     @Override
     public HashHolder generateHash(String unhashedString) {
@@ -57,9 +55,20 @@ public abstract class AbstractSaltedHasher<T> implements Hasher {
     @Override
     public HashHolder generateHash(String unhashedString, byte[] salt) {
         logger.debug("generateHash()");
-        return new HashHolder(salt, internalGenerateHash(unhashedString, salt));
+        return new HashHolder(salt, internalGenerateHash(getBytes(unhashedString), salt));
     }
 
-    abstract protected byte[] internalGenerateHash(String unhashedString, byte[] salt);
+    @Override
+    public HashHolder generateHash(byte[] bytes) {
+        return generateHash(bytes, getSalt());
+    }
+
+    @Override
+    public HashHolder generateHash(byte[] bytes, byte[] salt) {
+        logger.debug("generateHash()");
+        return new HashHolder(salt, internalGenerateHash(bytes, salt));
+    }
+
+    abstract protected byte[] internalGenerateHash(byte[] unhashedString, byte[] salt);
 
 }

@@ -14,7 +14,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = "com.codeheadsystems"
-version = '0.7.0'
+version = '0.8.0'
 
 ext {
     junitVersion = "4.12"

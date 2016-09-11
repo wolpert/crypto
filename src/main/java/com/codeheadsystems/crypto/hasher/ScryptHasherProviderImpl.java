@@ -5,10 +5,10 @@ import com.codeheadsystems.crypto.Hasher;
 /**
  * BSD-Style License 2016
  */
-public class ParanoidHasherProviderImpl implements HasherProvider {
+public class ScryptHasherProviderImpl implements HasherProvider {
 
     @Override
     public Hasher getHasher(HasherConfiguration hasherConfiguration) {
-        return new ParanoidHasher(hasherConfiguration);
+        return new ScryptHasher(hasherConfiguration);
     }
 }

@@ -11,33 +11,29 @@ import java.security.NoSuchAlgorithmException;
 /**
  * BSD-Style License 2016
  */
-public class MessageDigestHasher extends AbstractSaltedHasher<MessageDigest> implements Hasher {
+public class MessageDigestHasher extends AbstractSaltedHasher implements Hasher {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageDigestHasher.class);
+    protected final ThreadLocal<MessageDigest> digesterThreadLocal;
 
     public MessageDigestHasher(HasherConfiguration hasherConfiguration) {
         super(hasherConfiguration);
-    }
-
-    private MessageDigest getMessageDigest() {
-        logger.debug("getMessageDigest()");
-        MessageDigest result = digesterThreadLocal.get();
-        if (result == null) {
-            try {
-                result = MessageDigest.getInstance(digest);
-            } catch (NoSuchAlgorithmException e) {
-                throw new HasherException("Failure with Algorithm: " + digest, e);
+        digesterThreadLocal = new ThreadLocal<MessageDigest>() {
+            @Override
+            protected MessageDigest initialValue() {
+                try {
+                    return MessageDigest.getInstance(digest);
+                } catch (NoSuchAlgorithmException e) {
+                    throw new HasherException("Failure with Algorithm: " + digest, e);
+                }
             }
-            digesterThreadLocal.set(result);
-        }
-        return result;
+        };
     }
 
     @Override
-    protected byte[] internalGenerateHash(String unhashedString, byte[] salt) {
+    protected byte[] internalGenerateHash(byte[] hashingBytes, byte[] salt) {
         logger.debug("internalGenerateHash(,)");
-        byte[] hashingBytes = getBytes(unhashedString);
-        MessageDigest messageDigest = getMessageDigest();
+        MessageDigest messageDigest = digesterThreadLocal.get();
         try {
             for (int i = 0; i < iterations; i++) {
                 messageDigest.update(salt);

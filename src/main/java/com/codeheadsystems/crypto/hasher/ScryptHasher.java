@@ -14,9 +14,9 @@ import static com.codeheadsystems.crypto.Utilities.randomBytes;
  * Uses bouncy castle version of scrypt. Basically ignores most of the configuration
  * BSD-Style License 2016
  */
-public class ParanoidHasher implements Hasher {
+public class ScryptHasher extends AbstractSaltedHasher implements Hasher {
 
-    private static final Logger logger = LoggerFactory.getLogger(ParanoidHasher.class);
+    private static final Logger logger = LoggerFactory.getLogger(ScryptHasher.class);
 
     protected final int saltSize;
     protected final int iterations;
@@ -25,7 +25,8 @@ public class ParanoidHasher implements Hasher {
     protected final int p = 1;
     protected final int dkLen = 32; // bytes, not bits
 
-    public ParanoidHasher(HasherConfiguration hasherConfiguration) {
+    public ScryptHasher(HasherConfiguration hasherConfiguration) {
+        super(hasherConfiguration);
         saltSize = hasherConfiguration.getSaltSize();
         iterations = hasherConfiguration.getIterations();
         logger.debug("Paranoid scrypt: n=" + iterations + " r=" + r + " p=" + p + " dkLen=" + dkLen);
@@ -41,25 +42,14 @@ public class ParanoidHasher implements Hasher {
     } // Ignore what is in the config
 
     @Override
-    public HashHolder generateHash(String unhashedString) {
-        return generateHash(unhashedString, getSalt());
-    }
-
-    @Override
-    public HashHolder generateHash(String unhashedString, byte[] salt) {
-        logger.debug("generateHash()");
-        return new HashHolder(salt, internalGenerateHash(unhashedString, salt));
-    }
-
-    @Override
     public boolean isSame(HashHolder hashedString, String unhashedString) {
         HashHolder newlyHashedString = generateHash(unhashedString, hashedString.getSalt());
         return Utilities.isSame(hashedString.getHash(), newlyHashedString.getHash());
     }
 
-    protected byte[] internalGenerateHash(String unhashedString, byte[] salt) {
+    protected byte[] internalGenerateHash(byte[] bytes, byte[] salt) {
         logger.debug("internalGenerateHash(,)");
-        return SCrypt.generate(getBytes(unhashedString), salt, iterations, r, p, dkLen);
+        return SCrypt.generate(bytes, salt, iterations, r, p, dkLen);
     }
 
 }

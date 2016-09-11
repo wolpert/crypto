@@ -1,18 +1,13 @@
 package com.codeheadsystems.crypto;
 
-import com.codeheadsystems.crypto.hasher.HashHolder;
+import com.codeheadsystems.crypto.hasher.ByteHasher;
+import com.codeheadsystems.crypto.password.PasswordHasher;
 
 /**
  * BSD-Style License 2016
  */
-public interface Hasher {
+public interface Hasher extends PasswordHasher, ByteHasher {
 
-    public String getDigest();
-
-    public HashHolder generateHash(String unhashedString);
-
-    public HashHolder generateHash(String unhashedString, byte[] salt);
-
-    public boolean isSame(HashHolder hashedString, String unhashedString);
+    String getDigest();
 
 }

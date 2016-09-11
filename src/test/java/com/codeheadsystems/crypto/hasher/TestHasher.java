@@ -10,7 +10,7 @@ public class TestHasher extends AbstractSaltedHasher {
     }
 
     @Override
-    protected byte[] internalGenerateHash(String unhashedString, byte[] salt) {
+    protected byte[] internalGenerateHash(byte[] bytes, byte[] salt) {
         return new byte[0];
     }
 }

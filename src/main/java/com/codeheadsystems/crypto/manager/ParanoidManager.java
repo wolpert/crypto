@@ -7,7 +7,7 @@ import com.codeheadsystems.crypto.cipher.ParanoidDecrypter;
 import com.codeheadsystems.crypto.cipher.ParanoidEncrypter;
 import com.codeheadsystems.crypto.password.KeyParameterFactory;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
-import com.codeheadsystems.crypto.password.ParanoidKeyParameterFactory;
+import com.codeheadsystems.crypto.password.ScryptKeyParameterFactory;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 import com.codeheadsystems.crypto.timer.DefaultTimerProvider;
 import com.codeheadsystems.crypto.timer.TimerProvider;
@@ -34,7 +34,7 @@ public class ParanoidManager implements Manager {
         TimerProvider timerProvider = new DefaultTimerProvider();
         encrypter = new ParanoidEncrypter();
         decrypter = new ParanoidDecrypter();
-        KeyParameterFactory.AbstractKeyParameterFactoryBuilder builder = new ParanoidKeyParameterFactory.Builder();
+        KeyParameterFactory.AbstractKeyParameterFactoryBuilder builder = new ScryptKeyParameterFactory.Builder();
         builder.timerProvider(timerProvider).iterationCount((int) Math.pow(2, 20));
         shortTermKeyParameterFactory = builder.expirationInMills(20000).build(); // 20 second
         longTermKeyParameterFactory = builder.expirationInMills(10 * 60 * 1000).build(); // 10 mins

@@ -2,7 +2,7 @@ package com.codeheadsystems.crypto.password;
 
 import com.codeheadsystems.crypto.Hasher;
 import com.codeheadsystems.crypto.hasher.HasherBuilder;
-import com.codeheadsystems.crypto.hasher.ParanoidHasherProviderImpl;
+import com.codeheadsystems.crypto.hasher.ScryptHasherProviderImpl;
 import com.codeheadsystems.crypto.timer.TimerProvider;
 
 import org.slf4j.Logger;
@@ -11,16 +11,16 @@ import org.slf4j.LoggerFactory;
 /**
  * BSD-Style License 2016
  */
-public class ParanoidKeyParameterFactory extends KeyParameterFactory {
+public class ScryptKeyParameterFactory extends KeyParameterFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(ParanoidKeyParameterFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(ScryptKeyParameterFactory.class);
 
-    protected ParanoidKeyParameterFactory(long expirationInMills, Hasher hasher, TimerProvider timerProvider) {
+    protected ScryptKeyParameterFactory(long expirationInMills, Hasher hasher, TimerProvider timerProvider) {
         super(expirationInMills, hasher, timerProvider);
-        logger.debug("ParanoidKeyParameterFactory(" + expirationInMills + "," + hasher + ")");
+        logger.debug("ScryptKeyParameterFactory(" + expirationInMills + "," + hasher + ")");
     }
 
-    public static class Builder extends AbstractKeyParameterFactoryBuilder<ParanoidKeyParameterFactory> {
+    public static class Builder extends AbstractKeyParameterFactoryBuilder<ScryptKeyParameterFactory> {
 
         @Override
         public AbstractKeyParameterFactoryBuilder iterationCount(int iterationCount) {
@@ -31,13 +31,13 @@ public class ParanoidKeyParameterFactory extends KeyParameterFactory {
         }
 
         @Override
-        public ParanoidKeyParameterFactory build() {
+        public ScryptKeyParameterFactory build() {
             Hasher hasher = new HasherBuilder()
-                    .hasherProviderClass(ParanoidHasherProviderImpl.class)
+                    .hasherProviderClass(ScryptHasherProviderImpl.class)
                     .iterations(iterationCount)
-                    .saltSize(16) // 128 bit
+                    .saltSize(32) // 256 bit
                     .build();
-            return new ParanoidKeyParameterFactory(expirationInMills, hasher, timerProvider);
+            return new ScryptKeyParameterFactory(expirationInMills, hasher, timerProvider);
         }
     }
 
