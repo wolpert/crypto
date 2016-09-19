@@ -26,10 +26,14 @@ public class KeyParameterWrapper {
         this.expirationHandler = expirationHandler;
     }
 
+    public boolean isExpired() {
+        return keyParameter == null;
+    }
+
     // TODO: readers-writers block instead of synchronized
     public synchronized KeyParameter getKeyParameter() throws SecretKeyExpiredException {
         logger.debug("getKeyParameter()");
-        if (keyParameter == null) {
+        if (isExpired()) {
             throw new SecretKeyExpiredException();
         }
         if (expirationHandler != null) {
@@ -40,7 +44,7 @@ public class KeyParameterWrapper {
 
     // TODO: readers-writers block instead of synchronized
     public synchronized void expire() {
-        if (keyParameter != null) {
+        if (!isExpired()) {
             logger.debug("expire() with valid keyParam");
             Utilities.clear(keyParameter.getKey());
             keyParameter = null;

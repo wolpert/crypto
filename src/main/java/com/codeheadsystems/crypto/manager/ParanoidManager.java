@@ -30,12 +30,16 @@ public class ParanoidManager implements Manager {
     private final ObjectManipulator objectManipulator;
 
     public ParanoidManager() {
+        this(20);
+    }
+
+    public ParanoidManager(int iterationExponential) {
         objectManipulator = new ObjectManipulator();
         TimerProvider timerProvider = new DefaultTimerProvider();
         encrypter = new ParanoidEncrypter();
         decrypter = new ParanoidDecrypter();
         KeyParameterFactory.AbstractKeyParameterFactoryBuilder builder = new ScryptKeyParameterFactory.Builder();
-        builder.timerProvider(timerProvider).iterationCount((int) Math.pow(2, 20));
+        builder.timerProvider(timerProvider).iterationCount((int) Math.pow(2, iterationExponential));
         shortTermKeyParameterFactory = builder.expirationInMills(20000).build(); // 20 second
         longTermKeyParameterFactory = builder.expirationInMills(10 * 60 * 1000).build(); // 10 mins
     }

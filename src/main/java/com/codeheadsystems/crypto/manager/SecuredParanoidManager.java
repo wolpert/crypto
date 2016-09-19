@@ -7,8 +7,13 @@ import com.codeheadsystems.crypto.Utilities;
  * BSD-Style License 2016
  */
 public class SecuredParanoidManager extends ParanoidManager {
+
     public SecuredParanoidManager() throws ParanoidManagerException {
-        super();
+        this(20);
+    }
+
+    public SecuredParanoidManager(int iterationExponential) throws ParanoidManagerException {
+        super(iterationExponential);
         if (!Utilities.isSecureRandomProvider()) {
             throw new ParanoidManagerException("Paranoid Manager will not operate without SecureRandom provider");
         }
