@@ -14,7 +14,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = "com.codeheadsystems"
-version = '0.8.1'
+version = '0.9.0'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7

@@ -39,7 +39,13 @@ public class HasherBuilder {
         try {
             Constructor<? extends HasherProvider> constructor = hasherProviderClass.getConstructor();
             return constructor.newInstance();
-        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+        } catch (NoSuchMethodException e) {
+            throw new HasherException("Unable to constructor hasher from provider " + hasherProviderClass, e);
+        } catch (IllegalAccessException e) {
+            throw new HasherException("Unable to constructor hasher from provider " + hasherProviderClass, e);
+        } catch (InstantiationException e) {
+            throw new HasherException("Unable to constructor hasher from provider " + hasherProviderClass, e);
+        } catch (InvocationTargetException e) {
             throw new HasherException("Unable to constructor hasher from provider " + hasherProviderClass, e);
         }
     }

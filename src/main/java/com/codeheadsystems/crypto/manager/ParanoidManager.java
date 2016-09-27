@@ -69,11 +69,24 @@ public class ParanoidManager implements Manager {
     }
 
     @Override
+    public SecondaryKey generateFreshSecondary(SecondaryKey secondaryKey) throws SecretKeyExpiredException, CryptoException {
+        KeyParameterWrapper newSecondary = longTermKeyParameterFactory.generateRandom256KeyParameterWrapper();
+        byte[] encryptedSecondary = encrypter.encryptBytes(secondaryKey.getKeyParameterWrapper(), newSecondary.getKeyParameter().getKey());
+        return new SecondaryKey(newSecondary, encryptedSecondary, null);
+    }
+
+    @Override
     public SecondaryKey regenerateSecondary(String password, byte[] salt, byte[] encryptedSecondary) throws SecretKeyExpiredException, CryptoException {
         KeyParameterWrapper prime = generatePrime(password, salt);
         KeyParameterWrapper secondary = longTermKeyParameterFactory.getExpirableKeyParameterWrapper(new KeyParameter(decrypter.decryptBytes(prime, encryptedSecondary)));
         prime.expire();
         return new SecondaryKey(secondary, encryptedSecondary, salt);
+    }
+
+    @Override
+    public SecondaryKey regenerateSecondary(SecondaryKey encryptingSecondaryKey, byte[] encryptedSecondary) throws SecretKeyExpiredException, CryptoException {
+        KeyParameterWrapper secondary = longTermKeyParameterFactory.getExpirableKeyParameterWrapper(new KeyParameter(decrypter.decryptBytes(encryptingSecondaryKey.getKeyParameterWrapper(), encryptedSecondary)));
+        return new SecondaryKey(secondary, encryptedSecondary, null);
     }
 
     @Override

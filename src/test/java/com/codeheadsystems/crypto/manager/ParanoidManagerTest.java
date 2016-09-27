@@ -74,6 +74,10 @@ public class ParanoidManagerTest {
         assertEqualByteArrays(ek1, ek2);
         byte[] k2 = redo.getKeyParameterWrapper().getKeyParameter().getKey();
         assertEqualByteArrays(k1, k2);
+
+        SecondaryKey newSecondary = manager.generateFreshSecondary(redo);
+        SecondaryKey redoNewSecondary = manager.regenerateSecondary(redo, newSecondary.getEncryptedKey());
+        assertEqualByteArrays(newSecondary.getEncryptedKey(), redoNewSecondary.getEncryptedKey());
     }
 
     @Test

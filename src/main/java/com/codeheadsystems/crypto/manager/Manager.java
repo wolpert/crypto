@@ -44,6 +44,23 @@ public interface Manager {
     SecondaryKey generateFreshSecondary(String password) throws SecretKeyExpiredException, CryptoException;
 
     /**
+     * Provides a new, random 256-bit AES key that can be used to encrypt/decrypt content,
+     * encrypted with this other secondary key.
+     * THIS METHOD GENERATES NO SALT FOR THE NEW SECONDARY.
+     * This key is NOT the hashed password/salt combo. Uses Scrypt
+     * for hashing the password/salt with large number of iterations, so it is slow. Uses the
+     * random provider given to create the random data needed for the 256 bit key, and encrypts that
+     * key. The KeyParameterWrapper provided by the secondary key will expire requiring to regenerate
+     * the secondary key using the same password/salt and the encrypted secondary.
+     *
+     * @param secondaryKey A previously created secondary key that already contains a keyParameter used to encrypt this new key parameter
+     * @return A usable SecondaryKey for encrypting content. You must get the salt from the Secondary for storage, as well as the encrypted bytes
+     * @throws SecretKeyExpiredException Though uncommon, can happen if the system is too slow to encrypt the secondary key.
+     * @throws CryptoException           This will happen if the encryption fails.
+     */
+    SecondaryKey generateFreshSecondary(SecondaryKey secondaryKey) throws SecretKeyExpiredException, CryptoException;
+
+    /**
      * Given an existing encrypted byte set, will regenerate a SecondaryKey using the same password/salt combo
      * provided in the original generation.
      *
@@ -55,6 +72,18 @@ public interface Manager {
      * @throws CryptoException           This will happen if the decryption of the encryptedSecondary fails.
      */
     SecondaryKey regenerateSecondary(String password, byte[] salt, byte[] encryptedSecondary) throws SecretKeyExpiredException, CryptoException;
+
+    /**
+     * Given an existing encrypted byte set, will regenerate a SecondaryKey using the same password/salt combo
+     * provided in the original generation.
+     *
+     * @param secondaryKey The key used to decrypt the encryptedSecondary
+     * @param encryptedSecondary The bytes stored in the original SecondaryKey.
+     * @return a new SecondaryKey with the proper contents needed for decrypting usagel
+     * @throws SecretKeyExpiredException Though uncommon, can happen if the system is too slow to encrypt the secondary key.
+     * @throws CryptoException           This will happen if the decryption of the encryptedSecondary fails.
+     */
+    SecondaryKey regenerateSecondary(SecondaryKey secondaryKey, byte[] encryptedSecondary) throws SecretKeyExpiredException, CryptoException;
 
     /**
      * Encode your text with this secondary key you used.
