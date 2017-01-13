@@ -1,6 +1,7 @@
 package com.codeheadsystems.crypto.password;
 
 import com.codeheadsystems.crypto.Hasher;
+import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.hasher.HasherBuilder;
 import com.codeheadsystems.crypto.hasher.ScryptHasherProviderImpl;
 import com.codeheadsystems.crypto.timer.TimerProvider;
@@ -13,11 +14,17 @@ import org.slf4j.LoggerFactory;
  */
 public class ScryptKeyParameterFactory extends KeyParameterFactory {
 
+    private static int SALT_SIZE = 32;
     private static final Logger logger = LoggerFactory.getLogger(ScryptKeyParameterFactory.class);
 
     protected ScryptKeyParameterFactory(long expirationInMills, Hasher hasher, TimerProvider timerProvider) {
         super(expirationInMills, hasher, timerProvider);
         logger.debug("ScryptKeyParameterFactory(" + expirationInMills + "," + hasher + ")");
+    }
+
+    @Override
+    public byte[] getSalt() {
+        return Utilities.randomBytes(32);
     }
 
     public static class Builder extends AbstractKeyParameterFactoryBuilder<ScryptKeyParameterFactory> {
@@ -35,7 +42,7 @@ public class ScryptKeyParameterFactory extends KeyParameterFactory {
             Hasher hasher = new HasherBuilder()
                     .hasherProviderClass(ScryptHasherProviderImpl.class)
                     .iterations(iterationCount)
-                    .saltSize(32) // 256 bit
+                    .saltSize(SALT_SIZE) // 256 bit
                     .build();
             return new ScryptKeyParameterFactory(expirationInMills, hasher, timerProvider);
         }

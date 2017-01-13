@@ -88,6 +88,7 @@ public class ParanoidManagerTest {
         SecondaryKey key = manager.generateFreshSecondary(password);
         byte[] encryptedkey = key.getEncryptedKey();
         byte[] salt = key.getSalt();
+        assertEquals(32, salt.length);
         byte[] encryptedText = manager.encode(clearText, key);
 
         key = manager.regenerateSecondary(password, salt, encryptedkey);
