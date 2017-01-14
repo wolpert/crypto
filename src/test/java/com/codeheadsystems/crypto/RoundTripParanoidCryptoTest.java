@@ -49,7 +49,7 @@ public class RoundTripParanoidCryptoTest {
         KeyParameterFactory slowDefaultFactory = new ScryptKeyParameterFactory.Builder().build();
         byte[] salt = slowDefaultFactory.getSalt();
         KeyParameterWrapper encryptKeyParameterWrapper = slowDefaultFactory.generate(PASSWORD, salt);
-        assertEquals(256 / 8, encryptKeyParameterWrapper.getKeyParameter().getKey().length);
+        assertEquals(256 / 8, encryptKeyParameterWrapper.getKey().length);
         assertEquals(256 / 8, salt.length);
         byte[] encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
 

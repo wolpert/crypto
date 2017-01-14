@@ -65,14 +65,14 @@ public class ParanoidManagerTest {
         byte[] salt = secondary.getSalt();
         assertNotNull(secondary.getEncryptedKey());
         assertNotNull(secondary.getKeyParameterWrapper());
-        byte[] k1 = secondary.getKeyParameterWrapper().getKeyParameter().getKey();
+        byte[] k1 = secondary.getKeyParameterWrapper().getKey();
         assertNotNull(k1);
 
         SecondaryKey redo = manager.regenerateSecondary(password, salt, secondary.getEncryptedKey());
         byte[] ek1 = secondary.getEncryptedKey();
         byte[] ek2 = redo.getEncryptedKey();
         assertEqualByteArrays(ek1, ek2);
-        byte[] k2 = redo.getKeyParameterWrapper().getKeyParameter().getKey();
+        byte[] k2 = redo.getKeyParameterWrapper().getKey();
         assertEqualByteArrays(k1, k2);
 
         SecondaryKey newSecondary = manager.generateFreshSecondary(redo);

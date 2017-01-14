@@ -15,11 +15,6 @@ import static java.util.Objects.requireNonNull;
 public class TemporaryObject<T> {
 
     private static final Timer timer = new Timer("TemporaryObjectTimer", true);
-
-    public static TemporaryObject<byte[]> getTemporaryBytes(byte[] bytes, long millsToExpire) {
-        return new TemporaryObject<>(bytes, millsToExpire, Utilities::clear);
-    }
-
     private final long millsToExpire;
     private volatile T value;
     private Consumer<T> destroyer;
@@ -52,8 +47,12 @@ public class TemporaryObject<T> {
         setTimerTask();
     }
 
+    public static TemporaryObject<byte[]> getTemporaryBytes(byte[] bytes, long millsToExpire) {
+        return new TemporaryObject<>(bytes, millsToExpire, Utilities::clear);
+    }
+
     private void setTimerTask() {
-        if(millsToExpire<1){
+        if (millsToExpire < 1) {
             return;
         }
         if (timerTask != null) {
@@ -91,15 +90,40 @@ public class TemporaryObject<T> {
      * that was returned.
      *
      * @param caller that will use the value given here.
+     * @param <E> Expected exception to be thrown
      * @throws TemporaryObjectExpiredException if the value is gone
+     * @throws E as defined by the caller
      */
-    public void callWithValue(Consumer<T> caller) throws TemporaryObjectExpiredException {
+    public <E extends Exception> void callWithValue(ExceptionConsumer<T, E> caller) throws TemporaryObjectExpiredException, E {
         synchronized (this) {
             setTimerTask();
             if (value == null) {
                 throw new TemporaryObjectExpiredException();
             }
             caller.accept(value);
+        }
+    }
+
+
+    /**
+     * This method provides a way to ensure you either have the legitimate value
+     * or its unavailable. Unlike getValue since the destroyer can operate on the value
+     * that was returned.
+     *
+     * @param function that will use the value given here, returning a result
+     * @param <R> Expected return type
+     * @param <E> Expected exception to be thrown
+     * @throws TemporaryObjectExpiredException if the value is gone
+     * @throws E                               as defined by the caller
+     * @return R which resulted from the function
+     */
+    public <R, E extends Exception> R applyWithValue(ExceptionFunction<T, R, E> function) throws TemporaryObjectExpiredException, E {
+        synchronized (this) {
+            setTimerTask();
+            if (value == null) {
+                throw new TemporaryObjectExpiredException();
+            }
+            return function.apply(value);
         }
     }
 

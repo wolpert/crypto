@@ -46,7 +46,7 @@ public class RoundTripCryptoTest {
     public void testRoundTrip() throws SecretKeyExpiredException, CryptoException {
         byte[] salt = messageDigestKeyParameterFactory.getSalt();
         KeyParameterWrapper encryptKeyParameterWrapper = generate(salt);
-        assertEquals(256 / 8, encryptKeyParameterWrapper.getKeyParameter().getKey().length);
+        assertEquals(256 / 8, encryptKeyParameterWrapper.getKey().length);
         byte[] encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
 
         // rebuild the keyParams

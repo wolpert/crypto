@@ -9,4 +9,8 @@ public class SecretKeyExpiredException extends Exception {
     public SecretKeyExpiredException() {
         super("The secret key has expired");
     }
+
+    public SecretKeyExpiredException(Exception e) {
+        super(e);
+    }
 }

@@ -28,10 +28,10 @@ public class StandardExpirationHandlerTest {
                 .build();
         byte[] salt = keyParameterFactory.getSalt();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt);
-        assertNotNull(keyParameterWrapper.getKeyParameter());
+        assertNotNull(keyParameterWrapper.getKey());
         Thread.sleep(500);
         try {
-            keyParameterWrapper.getKeyParameter();
+            keyParameterWrapper.getKey();
             throw new IllegalStateException("We should not have gotten here");
         } catch (SecretKeyExpiredException see) {
             ; // we expect this
@@ -46,7 +46,7 @@ public class StandardExpirationHandlerTest {
                 .build();
         byte[] salt = keyParameterFactory.getSalt();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt);
-        assertNotNull(keyParameterWrapper.getKeyParameter());
+        assertNotNull(keyParameterWrapper.getKey());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class StandardExpirationHandlerTest {
                 .build();
         byte[] salt = keyParameterFactory.getSalt();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt); // no salt
-        assertNotNull(keyParameterWrapper.getKeyParameter());
+        assertNotNull(keyParameterWrapper.getKey());
     }
 
     @Test(expected = SecretKeyExpiredException.class)
@@ -69,7 +69,7 @@ public class StandardExpirationHandlerTest {
         byte[] salt = keyParameterFactory.getSalt();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt); // no salt
         Thread.sleep(100);
-        assertNotNull(keyParameterWrapper.getKeyParameter());
+        assertNotNull(keyParameterWrapper.getKey());
     }
 
 }

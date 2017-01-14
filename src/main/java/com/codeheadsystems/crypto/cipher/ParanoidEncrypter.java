@@ -24,7 +24,7 @@ public class ParanoidEncrypter extends ParanoidCipherProvider implements Encrypt
 
     @Override
     public byte[] encryptBytes(KeyParameterWrapper keyParameterWrapper, String text) throws CryptoException, SecretKeyExpiredException {
-        return encryptBytes(keyParameterWrapper.getKeyParameter(), text.getBytes(getCharset()));
+        return keyParameterWrapper.processWithKeyParameter((keyParameter -> encryptBytes(keyParameter, text.getBytes(getCharset()))));
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ParanoidEncrypter extends ParanoidCipherProvider implements Encrypt
 
     @Override
     public byte[] encryptBytes(KeyParameterWrapper keyParameterWrapper, byte[] bytes) throws CryptoException, SecretKeyExpiredException {
-        return encryptBytes(keyParameterWrapper.getKeyParameter(), bytes);
+        return keyParameterWrapper.processWithKeyParameter(keyParameter -> encryptBytes(keyParameter, bytes));
     }
 
     @Override

@@ -25,6 +25,7 @@ public class TemporaryObjectTest {
         assertTrue(value.isPresent());
         assertEquals("blah", value.get());
         to.callWithValue((str) -> assertEquals("blah", str));
+        assertEquals("blah1", to.applyWithValue((str) -> str + "1"));
     }
 
 
@@ -42,6 +43,14 @@ public class TemporaryObjectTest {
         to.callWithValue((str) -> assertEquals("blah", str));
     }
 
+    @Test(expected = TemporaryObjectExpiredException
+            .class)
+    public void testExpiringBehaviorWithApplyWithValue() throws TemporaryObjectExpiredException {
+        TemporaryObject<String> to = new TemporaryObject<>("blah", 10);
+        sleep(10);
+        assertEquals("blah1", to.applyWithValue((str) -> str + "1"));
+    }
+
     @Test
     public void testExpiringBehaviorWithGetValue() {
         TemporaryObject<String> to = new TemporaryObject<>("blah", 10);
@@ -56,7 +65,8 @@ public class TemporaryObjectTest {
         Optional<byte[]> value = to.getValue();
         assertTrue(value.isPresent());
         assertTrue(Utilities.isSame(array, value.get()));
-        to.callWithValue((str) -> assertTrue(Utilities.isSame(array, value.get())));
+        to.callWithValue((a2) -> assertTrue(Utilities.isSame(array, a2)));
+        assertTrue(Utilities.isSame(array, to.applyWithValue((a2)->a2)));
     }
 
     @Test

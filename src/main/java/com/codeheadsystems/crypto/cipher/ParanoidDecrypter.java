@@ -29,7 +29,7 @@ public class ParanoidDecrypter extends ParanoidCipherProvider implements Decrypt
 
     @Override
     public String decryptText(KeyParameterWrapper keyParameterWrapper, byte[] encryptedBytes) throws CryptoException, SecretKeyExpiredException {
-        return decryptText(keyParameterWrapper.getKeyParameter(), encryptedBytes);
+        return keyParameterWrapper.processWithKeyParameter((keyParameter -> decryptText(keyParameter, encryptedBytes)));
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ParanoidDecrypter extends ParanoidCipherProvider implements Decrypt
 
     @Override
     public byte[] decryptBytes(KeyParameterWrapper keyParameterWrapper, byte[] encryptedBytes) throws CryptoException, SecretKeyExpiredException {
-        return decryptBytes(keyParameterWrapper.getKeyParameter(), encryptedBytes);
+        return keyParameterWrapper.processWithKeyParameter((keyParameter -> decryptBytes(keyParameter, encryptedBytes)));
     }
 
     @Override

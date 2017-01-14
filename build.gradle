@@ -14,7 +14,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = "com.codeheadsystems"
-version = '0.9.2'
+version = '0.9.3'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -50,7 +50,6 @@ uploadArchives {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment ->
                 signing.signPom(deployment)
-
             }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
