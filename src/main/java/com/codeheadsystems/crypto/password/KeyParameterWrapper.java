@@ -1,6 +1,7 @@
 package com.codeheadsystems.crypto.password;
 
 import com.codeheadsystems.crypto.Utilities;
+import com.codeheadsystems.crypto.types.TemporaryObject;
 
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.slf4j.Logger;
@@ -15,42 +16,23 @@ public class KeyParameterWrapper {
 
     private static Logger logger = LoggerFactory.getLogger(KeyParameterWrapper.class);
 
-    private volatile ExpirationHandler expirationHandler;
-    private volatile KeyParameter keyParameter;
+    private volatile TemporaryObject<KeyParameter> keyParameter;
 
     public KeyParameterWrapper(KeyParameter keyParameter) {
-        this.keyParameter = keyParameter;
+        this(keyParameter, 20000);
     }
 
-    public void setExpirationHandler(ExpirationHandler expirationHandler) {
-        this.expirationHandler = expirationHandler;
+    public KeyParameterWrapper(KeyParameter keyParameter, long expirationInMills) {
+        this.keyParameter = new TemporaryObject<>(keyParameter, expirationInMills, (kp) -> Utilities.clear(kp.getKey()));
     }
 
-    public boolean isExpired() {
-        return keyParameter == null;
-    }
-
-    // TODO: readers-writers block instead of synchronized
     public synchronized KeyParameter getKeyParameter() throws SecretKeyExpiredException {
         logger.debug("getKeyParameter()");
-        if (isExpired()) {
-            throw new SecretKeyExpiredException();
-        }
-        if (expirationHandler != null) {
-            expirationHandler.touch();
-        }
-        return keyParameter;
+        return keyParameter.getValue().orElseThrow(SecretKeyExpiredException::new);
     }
 
     // TODO: readers-writers block instead of synchronized
     public synchronized void expire() {
-        if (!isExpired()) {
-            logger.debug("expire() with valid keyParam");
-            Utilities.clear(keyParameter.getKey());
-            keyParameter = null;
-            expirationHandler = null;
-        } else {
-            logger.debug("expire() already expired");
-        }
+        keyParameter.destroy();
     }
 }

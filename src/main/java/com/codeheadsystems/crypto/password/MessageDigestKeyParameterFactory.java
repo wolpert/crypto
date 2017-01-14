@@ -15,8 +15,8 @@ public class MessageDigestKeyParameterFactory extends KeyParameterFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageDigestKeyParameterFactory.class);
 
-    private MessageDigestKeyParameterFactory(long expirationInMills, Hasher hasher, TimerProvider timerProvider) {
-        super(expirationInMills, hasher, timerProvider);
+    private MessageDigestKeyParameterFactory(long expirationInMills, Hasher hasher) {
+        super(expirationInMills, hasher);
         logger.debug("MessageDigestKeyParameterFactory(" + expirationInMills + "," + hasher + ")");
     }
 
@@ -29,7 +29,7 @@ public class MessageDigestKeyParameterFactory extends KeyParameterFactory {
                     .digest("SKEIN-512-256")
                     .iterations(iterationCount)
                     .build();
-            return new MessageDigestKeyParameterFactory(expirationInMills, hasher, timerProvider);
+            return new MessageDigestKeyParameterFactory(expirationInMills, hasher);
         }
     }
 

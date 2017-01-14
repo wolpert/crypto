@@ -102,7 +102,7 @@ public class TemporaryObject<T> {
         }
     }
 
-    private void destroy() {
+    public void destroy() {
         synchronized (this) {
             if (value != null) {
                 if (destroyer != null) {

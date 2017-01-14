@@ -24,12 +24,10 @@ public abstract class KeyParameterFactory {
     protected final RandomProvider randomProvider;
     protected final long expirationInMills;
     protected final Hasher hasher;
-    protected final Timer timer;
 
-    protected KeyParameterFactory(long expirationInMills, Hasher hasher, TimerProvider timerProvider) {
+    protected KeyParameterFactory(long expirationInMills, Hasher hasher) {
         this.expirationInMills = expirationInMills;
         this.hasher = requireNonNull(hasher);
-        this.timer = requireNonNull(timerProvider.getTimer());
         if (!Utilities.isSecureRandomProvider()) {
             logger.error("NOT USING A SECURE RANDOM PROVIDER. USING: " + Utilities.getRandomProvider().getClass().getCanonicalName());
         }
@@ -61,13 +59,7 @@ public abstract class KeyParameterFactory {
     }
 
     public KeyParameterWrapper getExpirableKeyParameterWrapper(KeyParameter keyParameter) {
-        KeyParameterWrapper secretKeyWrapper = new KeyParameterWrapper(keyParameter);
-        if (expirationInMills > 0) {
-            new StandardExpirationHandler(expirationInMills, timer, secretKeyWrapper);
-        } else {
-            new NoopExpirationHandler();
-        }
-        return secretKeyWrapper;
+        return new KeyParameterWrapper(keyParameter, expirationInMills);
     }
 
 

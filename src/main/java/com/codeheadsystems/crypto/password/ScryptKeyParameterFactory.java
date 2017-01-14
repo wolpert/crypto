@@ -17,8 +17,8 @@ public class ScryptKeyParameterFactory extends KeyParameterFactory {
     private static int SALT_SIZE = 32;
     private static final Logger logger = LoggerFactory.getLogger(ScryptKeyParameterFactory.class);
 
-    protected ScryptKeyParameterFactory(long expirationInMills, Hasher hasher, TimerProvider timerProvider) {
-        super(expirationInMills, hasher, timerProvider);
+    protected ScryptKeyParameterFactory(long expirationInMills, Hasher hasher) {
+        super(expirationInMills, hasher);
         logger.debug("ScryptKeyParameterFactory(" + expirationInMills + "," + hasher + ")");
     }
 
@@ -44,7 +44,7 @@ public class ScryptKeyParameterFactory extends KeyParameterFactory {
                     .iterations(iterationCount)
                     .saltSize(SALT_SIZE) // 256 bit
                     .build();
-            return new ScryptKeyParameterFactory(expirationInMills, hasher, timerProvider);
+            return new ScryptKeyParameterFactory(expirationInMills, hasher);
         }
     }
 
