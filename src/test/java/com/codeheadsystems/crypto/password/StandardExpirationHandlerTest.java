@@ -2,8 +2,6 @@ package com.codeheadsystems.crypto.password;
 
 import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
-import com.codeheadsystems.crypto.timer.DefaultTimerProvider;
-import com.codeheadsystems.crypto.timer.TimerProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +14,6 @@ import static org.junit.Assert.assertNotNull;
 public class StandardExpirationHandlerTest {
 
     public static final String PASSWORD = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
-    private TimerProvider timerProvider = new DefaultTimerProvider();
 
     @Before
     public void setRandomFactory() {
@@ -26,7 +23,6 @@ public class StandardExpirationHandlerTest {
     @Test
     public void testFullExpiration() throws SecretKeyExpiredException, InterruptedException {
         KeyParameterFactory keyParameterFactory = new MessageDigestKeyParameterFactory.Builder()
-                .timerProvider(timerProvider)
                 .expirationInMills(400)
                 .build();
         byte[] salt = keyParameterFactory.getSalt();
@@ -44,7 +40,6 @@ public class StandardExpirationHandlerTest {
     @Test
     public void testDidNotExpire() throws SecretKeyExpiredException {
         KeyParameterFactory keyParameterFactory = new MessageDigestKeyParameterFactory.Builder()
-                .timerProvider(timerProvider)
                 .expirationInMills(500)
                 .build();
         byte[] salt = keyParameterFactory.getSalt();
@@ -55,7 +50,6 @@ public class StandardExpirationHandlerTest {
     @Test
     public void testDidNotExpireWithNoTime() throws SecretKeyExpiredException {
         KeyParameterFactory keyParameterFactory = new MessageDigestKeyParameterFactory.Builder()
-                .timerProvider(timerProvider)
                 .expirationInMills(0)
                 .build();
         byte[] salt = keyParameterFactory.getSalt();
@@ -66,7 +60,6 @@ public class StandardExpirationHandlerTest {
     @Test(expected = SecretKeyExpiredException.class)
     public void testDidExpire() throws SecretKeyExpiredException, InterruptedException {
         KeyParameterFactory keyParameterFactory = new MessageDigestKeyParameterFactory.Builder()
-                .timerProvider(timerProvider)
                 .expirationInMills(50)
                 .build();
         byte[] salt = keyParameterFactory.getSalt();

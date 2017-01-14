@@ -3,7 +3,6 @@ package com.codeheadsystems.crypto.password;
 import com.codeheadsystems.crypto.Hasher;
 import com.codeheadsystems.crypto.hasher.HasherBuilder;
 import com.codeheadsystems.crypto.hasher.MessageDigestHasherProviderImpl;
-import com.codeheadsystems.crypto.timer.TimerProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

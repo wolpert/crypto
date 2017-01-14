@@ -3,13 +3,10 @@ package com.codeheadsystems.crypto.password;
 import com.codeheadsystems.crypto.Hasher;
 import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.random.RandomProvider;
-import com.codeheadsystems.crypto.timer.TimerProvider;
 
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Timer;
 
 import static com.codeheadsystems.crypto.Utilities.stringToBytes;
 import static java.util.Objects.requireNonNull;
@@ -92,7 +89,6 @@ public abstract class KeyParameterFactory {
     public static abstract class AbstractKeyParameterFactoryBuilder<T extends KeyParameterFactory> {
         protected int iterationCount = (int) Math.pow(2, 20); // minimum is 2^14. We do 2^20 for this sensitive data
         protected long expirationInMills = 600000;
-        protected TimerProvider timerProvider;
 
         abstract public T build();
 
@@ -107,11 +103,6 @@ public abstract class KeyParameterFactory {
 
         public AbstractKeyParameterFactoryBuilder expirationInMills(long expirationInMills) {
             this.expirationInMills = expirationInMills;
-            return this;
-        }
-
-        public AbstractKeyParameterFactoryBuilder timerProvider(TimerProvider timerProvider) {
-            this.timerProvider = timerProvider;
             return this;
         }
     }

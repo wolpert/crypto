@@ -4,7 +4,6 @@ import com.codeheadsystems.crypto.Hasher;
 import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.hasher.HasherBuilder;
 import com.codeheadsystems.crypto.hasher.ScryptHasherProviderImpl;
-import com.codeheadsystems.crypto.timer.TimerProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
