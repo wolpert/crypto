@@ -22,44 +22,33 @@ Passwords are hashed to generate the 256-bit key, which is used to encrypt and
 decrypt with the AES crypto library. [GCM](https://en.wikipedia.org/wiki/Galois/Counter_Mode)
 is used for authenticated encryption. (Strings are converted with UTF-16LE charset)
 
-The Hashing technique can be picked by the user. The default Paranoid impl uses SCrypt, but
-the user can use a JCE-provided message digest, which we use SKEIN-512-256 by default.
-We include the Bouncy Castle providers for the JCE, but use BC directly for encryption to
-avoid the policy file requirement of the JCE.
-
-Note that the MessageDigest version of the hasher does NOT use PBKDF2 standard, which was
-not available in JDK7. It does default to 65536 iterations with 32-byte salt though.
-If this bugs you, use the Paranoid mode.
-
 Adding support to expire passwords forcing a user to re-enter in the password.
 This is baked in at the lowest level so using this library just has to handle the
 proper exception and reload with the users password.
 
 Uses the SecureRandom class for creating random bytes. If things run slow, this is why.
 Create more entropy folks. Do not change that to the regular random class. That would be
-dumb.
+dumb. On Linux/UNIX, switch /dev/random usage to /dev/urandom via properties to the
+running java command. That may be needed, especially with virtual machines.
 
 ## JCE Notes ##
 
 This library avoids the JCE key-length limiting 'feature' in the encryption process.
-
-You can optionally use a message digest via the JCE which will create a hasher with the
-SKEIN-512-256 digester, or use the Paranoid one, which uses SCrypt without the JCE.
+This enforces 256 AES encryption regardless of JCE protocols.
 
 ## Trust Me ##
 
 Actually, do not trust me. Look at the code. See what it does and how it does it.
-The encryption routines are fairly basic. The Hashing component will become simpler.
-Comment on the github page if you have any suggestions.
+The encryption routines are fairly basic. Comment on the github page if you have any suggestions.
 
 ## Gradle ##
-    compile "com.codeheadsystems:crypto:0.9.0"
+    compile "com.codeheadsystems:crypto:0.9.2"
 
 ## Maven ##
     <dependency>
       <groupId>com.codeheadsystems</groupId>
       <artifactId>crypto</artifactId>
-      <version>0.9.0</version>
+      <version>0.9.2</version>
     </dependency>
 
 ## Expected Use-case ##
@@ -114,7 +103,6 @@ the encrypted content via the toString() method on the EncryptedByteHolder.
 
         String clearText = "Super Important Text";
         KeyParameterFactory factory = new ParanoidKeyParameterFactory.Builder()
-                .timerProvider(new DefaultTimerProvider())
                 .expirationInMills(20000) // Expire keys in 20 seconds
                 .build();
         String password = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
@@ -138,7 +126,8 @@ the encrypted bytes.
 #### Compression ####
 
 The library does not compress strings automatically. You may want to in order to
-save space or to reduce details exposed with encrypted compressed strings.
+save space. Because we use GCM for the block mode, we are not exposing content
+with uncompressed strings, but its not a bad idea to add it anyways.
 Remember, this library is not intended to be fast. It is intended to
 be secure. So do not worry about any speed hit with compression. It is the least
 of your problems.
