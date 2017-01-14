@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.codeheadsystems.crypto.Utilities.randomBytes;
+import static com.codeheadsystems.crypto.cipher.ParanoidCipherProvider.BLOCK_LENGTH;
 import static junit.framework.TestCase.assertEquals;
 
 /**
@@ -21,7 +22,7 @@ public class EncryptedByteHolderTest {
 
     @Test
     public void testTextRoundTrip() {
-        byte[] iv = randomBytes(16);
+        byte[] iv = randomBytes(BLOCK_LENGTH);
         byte[] encryptedBytes = randomBytes(102);
         EncryptedByteHolder encryptedByteHolder = new EncryptedByteHolder(encryptedBytes, iv);
         String output = encryptedByteHolder.toString();

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ScryptKeyParameterFactory extends KeyParameterFactory {
 
-    private static int SALT_SIZE = 32;
+    public static int SALT_SIZE = 32;
     private static final Logger logger = LoggerFactory.getLogger(ScryptKeyParameterFactory.class);
 
     protected ScryptKeyParameterFactory(long expirationInMills, Hasher hasher) {
@@ -22,7 +22,7 @@ public class ScryptKeyParameterFactory extends KeyParameterFactory {
 
     @Override
     public byte[] getSalt() {
-        return Utilities.randomBytes(32);
+        return Utilities.randomBytes(SALT_SIZE);
     }
 
     public static class Builder extends AbstractKeyParameterFactoryBuilder<ScryptKeyParameterFactory> {

@@ -91,6 +91,7 @@ public class TemporaryObject<T> {
      * that was returned.
      *
      * @param caller that will use the value given here.
+     * @throws TemporaryObjectExpiredException if the value is gone
      */
     public void callWithValue(Consumer<T> caller) throws TemporaryObjectExpiredException {
         synchronized (this) {

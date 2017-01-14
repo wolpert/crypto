@@ -7,8 +7,8 @@ import com.codeheadsystems.crypto.Hasher;
  */
 public class HasherBuilder {
 
-    private int saltSize = 20;
-    private int iterations = 1024;
+    private int saltSize = 32;
+    private int iterations = 16384;
 
     public HasherBuilder saltSize(int saltSize) {
         this.saltSize = saltSize;
