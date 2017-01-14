@@ -22,7 +22,8 @@ public class StandardExpirationHandlerTest {
 
     @Test
     public void testFullExpiration() throws SecretKeyExpiredException, InterruptedException {
-        KeyParameterFactory keyParameterFactory = new MessageDigestKeyParameterFactory.Builder()
+        KeyParameterFactory keyParameterFactory = new ScryptKeyParameterFactory.Builder()
+                .iterationCount(16384)
                 .expirationInMills(400)
                 .build();
         byte[] salt = keyParameterFactory.getSalt();
@@ -39,7 +40,8 @@ public class StandardExpirationHandlerTest {
 
     @Test
     public void testDidNotExpire() throws SecretKeyExpiredException {
-        KeyParameterFactory keyParameterFactory = new MessageDigestKeyParameterFactory.Builder()
+        KeyParameterFactory keyParameterFactory = new ScryptKeyParameterFactory.Builder()
+                .iterationCount(16384)
                 .expirationInMills(500)
                 .build();
         byte[] salt = keyParameterFactory.getSalt();
@@ -49,7 +51,8 @@ public class StandardExpirationHandlerTest {
 
     @Test
     public void testDidNotExpireWithNoTime() throws SecretKeyExpiredException {
-        KeyParameterFactory keyParameterFactory = new MessageDigestKeyParameterFactory.Builder()
+        KeyParameterFactory keyParameterFactory = new ScryptKeyParameterFactory.Builder()
+                .iterationCount(16384)
                 .expirationInMills(0)
                 .build();
         byte[] salt = keyParameterFactory.getSalt();
@@ -59,7 +62,8 @@ public class StandardExpirationHandlerTest {
 
     @Test(expected = SecretKeyExpiredException.class)
     public void testDidExpire() throws SecretKeyExpiredException, InterruptedException {
-        KeyParameterFactory keyParameterFactory = new MessageDigestKeyParameterFactory.Builder()
+        KeyParameterFactory keyParameterFactory = new ScryptKeyParameterFactory.Builder()
+                .iterationCount(16384)
                 .expirationInMills(50)
                 .build();
         byte[] salt = keyParameterFactory.getSalt();

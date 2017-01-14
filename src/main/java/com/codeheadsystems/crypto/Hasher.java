@@ -8,6 +8,4 @@ import com.codeheadsystems.crypto.password.PasswordHasher;
  */
 public interface Hasher extends PasswordHasher, ByteHasher {
 
-    String getDigest();
-
 }

@@ -16,21 +16,14 @@ public abstract class AbstractSaltedHasher implements Hasher {
 
     protected static Logger logger = LoggerFactory.getLogger(AbstractSaltedHasher.class);
 
-    protected final String digest;
     protected final int saltSize;
     protected final int iterations;
 
-    public AbstractSaltedHasher(final HasherConfiguration hasherConfiguration) {
+    public AbstractSaltedHasher(int saltSize, int iterations) {
         logger.debug("AbstractSaltedHasher()");
-        this.digest = hasherConfiguration.getDigest();
-        this.saltSize = hasherConfiguration.getSaltSize();
-        this.iterations = hasherConfiguration.getIterations();
-        logger.info("constructor({},{},{},{})", digest, saltSize, iterations, this.getClass());
-    }
-
-    @Override
-    public String getDigest() {
-        return digest;
+        this.saltSize = saltSize;
+        this.iterations = iterations;
+        logger.info("constructor({},{},{})", saltSize, iterations, this.getClass());
     }
 
     public byte[] getSalt() {

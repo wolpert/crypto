@@ -3,7 +3,6 @@ package com.codeheadsystems.crypto.password;
 import com.codeheadsystems.crypto.Hasher;
 import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.hasher.HasherBuilder;
-import com.codeheadsystems.crypto.hasher.ScryptHasherProviderImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +38,6 @@ public class ScryptKeyParameterFactory extends KeyParameterFactory {
         @Override
         public ScryptKeyParameterFactory build() {
             Hasher hasher = new HasherBuilder()
-                    .hasherProviderClass(ScryptHasherProviderImpl.class)
                     .iterations(iterationCount)
                     .saltSize(SALT_SIZE) // 256 bit
                     .build();

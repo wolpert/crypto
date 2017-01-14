@@ -18,28 +18,18 @@ public class ScryptHasher extends AbstractSaltedHasher implements Hasher {
 
     private static final Logger logger = LoggerFactory.getLogger(ScryptHasher.class);
 
-    protected final int saltSize;
-    protected final int iterations;
-
     protected final int r = 8;
     protected final int p = 1;
     protected final int dkLen = 32; // bytes, not bits
 
-    public ScryptHasher(HasherConfiguration hasherConfiguration) {
-        super(hasherConfiguration);
-        saltSize = hasherConfiguration.getSaltSize();
-        iterations = hasherConfiguration.getIterations();
+    public ScryptHasher(int saltSize, int iterations) {
+        super(saltSize, iterations);
         logger.debug("Paranoid scrypt: n=" + iterations + " r=" + r + " p=" + p + " dkLen=" + dkLen);
     }
 
     public byte[] getSalt() {
         return randomBytes(saltSize);
     }
-
-    @Override
-    public String getDigest() {
-        return "scrypt";
-    } // Ignore what is in the config
 
     @Override
     public boolean isSame(HashHolder hashedString, String unhashedString) {

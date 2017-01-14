@@ -33,12 +33,6 @@ public abstract class AbstractHasherTest {
         assertFalse(hasher.isSame(hashedValue, testWord + "x"));
     }
 
-    @Test(expected = HasherException.class)
-    public void testBadDigest() {
-        Hasher hasher = hasherBuilder.digest("JUNKY").build();
-        hasher.generateHash(testWord);
-    }
-
     @Test
     public void testSaltSizeChangeFailure() {
         Hasher hasher1 = hasherBuilder.saltSize(3).build();

@@ -4,7 +4,7 @@ import com.codeheadsystems.crypto.cipher.ParanoidDecrypter;
 import com.codeheadsystems.crypto.cipher.ParanoidEncrypter;
 import com.codeheadsystems.crypto.password.KeyParameterFactory;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
-import com.codeheadsystems.crypto.password.MessageDigestKeyParameterFactory;
+import com.codeheadsystems.crypto.password.ScryptKeyParameterFactory;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
 
@@ -30,7 +30,7 @@ public class RoundTripCryptoTest {
 
     @Before
     public void createKeyParameterFactory() {
-        messageDigestKeyParameterFactory = new MessageDigestKeyParameterFactory.Builder().build();
+        messageDigestKeyParameterFactory = new ScryptKeyParameterFactory.Builder().iterationCount(16384).build();
     }
 
     protected KeyParameterWrapper generate(byte[] salt) {
@@ -39,7 +39,7 @@ public class RoundTripCryptoTest {
 
     @Test
     public void testInstanceName() {
-        assert messageDigestKeyParameterFactory instanceof MessageDigestKeyParameterFactory;
+        assert messageDigestKeyParameterFactory instanceof ScryptKeyParameterFactory;
     }
 
     @Test
@@ -96,6 +96,6 @@ public class RoundTripCryptoTest {
 
         // rebuild the keyParams
         Decrypter decrypter = new ParanoidDecrypter();
-        decrypter.decryptText(new MessageDigestKeyParameterFactory.Builder().iterationCount(500).build().generate(PASSWORD, salt), encryptBytes);
+        decrypter.decryptText(new ScryptKeyParameterFactory.Builder().iterationCount(16385).build().generate(PASSWORD, salt), encryptBytes);
     }
 }
