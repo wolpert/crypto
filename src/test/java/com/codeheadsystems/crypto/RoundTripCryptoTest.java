@@ -3,7 +3,7 @@ package com.codeheadsystems.crypto;
 import com.codeheadsystems.crypto.cipher.CipherProvider;
 import com.codeheadsystems.crypto.cipher.ParanoidDecrypter;
 import com.codeheadsystems.crypto.cipher.ParanoidEncrypter;
-import com.codeheadsystems.crypto.password.KeyParameterFactory;
+import com.codeheadsystems.crypto.password.ExpiringKeyParameterFactory;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
@@ -21,7 +21,7 @@ public class RoundTripCryptoTest {
 
     public static final String PASSWORD = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
     public static final String CLEAR_TEXT = "This is not a test... wait... it is...";
-    private KeyParameterFactory messageDigestKeyParameterFactory;
+    private ExpiringKeyParameterFactory messageDigestExpiringKeyParameterFactory;
     private CipherProvider cipherProvider;
 
     @Before
@@ -31,7 +31,7 @@ public class RoundTripCryptoTest {
 
     @Before
     public void createKeyParameterFactory() {
-        messageDigestKeyParameterFactory = new KeyParameterFactory.Builder().iterationCount(16384).build();
+        messageDigestExpiringKeyParameterFactory = new ExpiringKeyParameterFactory.Builder().iterationCount(16384).build();
     }
 
     @Before
@@ -40,7 +40,7 @@ public class RoundTripCryptoTest {
     }
 
     protected KeyParameterWrapper generate(byte[] salt) {
-        return messageDigestKeyParameterFactory.generate(PASSWORD, requireNonNull(salt));
+        return messageDigestExpiringKeyParameterFactory.generate(PASSWORD, requireNonNull(salt));
     }
 
     @Test
@@ -52,7 +52,7 @@ public class RoundTripCryptoTest {
 
         // rebuild the keyParams
         Decrypter decrypter = new ParanoidDecrypter(cipherProvider);
-        String decryptedText = decrypter.decryptText(messageDigestKeyParameterFactory.generate(PASSWORD, salt), encryptBytes);
+        String decryptedText = decrypter.decryptText(messageDigestExpiringKeyParameterFactory.generate(PASSWORD, salt), encryptBytes);
         assertEquals(CLEAR_TEXT.length(), decryptedText.length());
         assertEquals(CLEAR_TEXT, decryptedText);
     }
@@ -71,7 +71,7 @@ public class RoundTripCryptoTest {
 
         // rebuild the keyParams
         Decrypter decrypter = new ParanoidDecrypter(cipherProvider);
-        String decryptedText = decrypter.decryptText(messageDigestKeyParameterFactory.generate(PASSWORD, saltString), encryptBytes);
+        String decryptedText = decrypter.decryptText(messageDigestExpiringKeyParameterFactory.generate(PASSWORD, saltString), encryptBytes);
         assertEquals(CLEAR_TEXT.length(), decryptedText.length());
         assertEquals(CLEAR_TEXT, decryptedText);
     }
@@ -97,6 +97,6 @@ public class RoundTripCryptoTest {
 
         // rebuild the keyParams
         Decrypter decrypter = new ParanoidDecrypter(cipherProvider);
-        decrypter.decryptText(new KeyParameterFactory.Builder().iterationCount(16385).build().generate(PASSWORD, salt), encryptBytes);
+        decrypter.decryptText(new ExpiringKeyParameterFactory.Builder().iterationCount(16385).build().generate(PASSWORD, salt), encryptBytes);
     }
 }
