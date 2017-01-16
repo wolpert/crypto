@@ -23,12 +23,12 @@ public class StandardExpirationHandlerTest {
 
     @Test
     public void testFullExpiration() throws SecretKeyExpiredException, InterruptedException {
-        ExpiringKeyParameterFactory expiringKeyParameterFactory = new ExpiringKeyParameterFactory.Builder()
+        KeyParameterFactory keyParameterFactory = new KeyParameterFactory.Builder()
                 .iterationCount(16384)
                 .expirationInMills(400)
                 .build();
         byte[] salt = CipherProvider.getSalt();
-        KeyParameterWrapper keyParameterWrapper = expiringKeyParameterFactory.generate(PASSWORD, salt);
+        KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt);
         assertNotNull(keyParameterWrapper.getKey());
         Thread.sleep(500);
         try {
@@ -41,34 +41,34 @@ public class StandardExpirationHandlerTest {
 
     @Test
     public void testDidNotExpire() throws SecretKeyExpiredException {
-        ExpiringKeyParameterFactory expiringKeyParameterFactory = new ExpiringKeyParameterFactory.Builder()
+        KeyParameterFactory keyParameterFactory = new KeyParameterFactory.Builder()
                 .iterationCount(16384)
                 .expirationInMills(500)
                 .build();
         byte[] salt = CipherProvider.getSalt();
-        KeyParameterWrapper keyParameterWrapper = expiringKeyParameterFactory.generate(PASSWORD, salt);
+        KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt);
         assertNotNull(keyParameterWrapper.getKey());
     }
 
     @Test
     public void testDidNotExpireWithNoTime() throws SecretKeyExpiredException {
-        ExpiringKeyParameterFactory expiringKeyParameterFactory = new ExpiringKeyParameterFactory.Builder()
+        KeyParameterFactory keyParameterFactory = new KeyParameterFactory.Builder()
                 .iterationCount(16384)
                 .expirationInMills(0)
                 .build();
         byte[] salt = CipherProvider.getSalt();
-        KeyParameterWrapper keyParameterWrapper = expiringKeyParameterFactory.generate(PASSWORD, salt); // no salt
+        KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt); // no salt
         assertNotNull(keyParameterWrapper.getKey());
     }
 
     @Test(expected = SecretKeyExpiredException.class)
     public void testDidExpire() throws SecretKeyExpiredException, InterruptedException {
-        ExpiringKeyParameterFactory expiringKeyParameterFactory = new ExpiringKeyParameterFactory.Builder()
+        KeyParameterFactory keyParameterFactory = new KeyParameterFactory.Builder()
                 .iterationCount(16384)
                 .expirationInMills(50)
                 .build();
         byte[] salt = CipherProvider.getSalt();
-        KeyParameterWrapper keyParameterWrapper = expiringKeyParameterFactory.generate(PASSWORD, salt); // no salt
+        KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt); // no salt
         Thread.sleep(100);
         assertNotNull(keyParameterWrapper.getKey());
     }

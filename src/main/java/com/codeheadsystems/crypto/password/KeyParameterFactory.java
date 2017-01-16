@@ -16,15 +16,15 @@ import static java.util.Objects.requireNonNull;
 /**
  * BSD-Style License 2016
  */
-public class ExpiringKeyParameterFactory {
+public class KeyParameterFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExpiringKeyParameterFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(KeyParameterFactory.class);
 
     private final RandomProvider randomProvider;
     private final long expirationInMills;
     private final Hasher hasher;
 
-    protected ExpiringKeyParameterFactory(long expirationInMills, Hasher hasher) {
+    protected KeyParameterFactory(long expirationInMills, Hasher hasher) {
         this.expirationInMills = expirationInMills;
         this.hasher = requireNonNull(hasher);
         if (!Utilities.isSecureRandomProvider()) {
@@ -88,12 +88,12 @@ public class ExpiringKeyParameterFactory {
         private int iterationCount = (int) Math.pow(2, 20); // minimum is 2^14. We do 2^20 for this sensitive data
         private long expirationInMills = 600000;
 
-        public ExpiringKeyParameterFactory build() {
+        public KeyParameterFactory build() {
             Hasher hasher = new HasherBuilder()
                     .iterations(iterationCount)
                     .saltSize(KEY_BYTE_SIZE) // 256 bit
                     .build();
-            return new ExpiringKeyParameterFactory(expirationInMills, hasher);
+            return new KeyParameterFactory(expirationInMills, hasher);
         }
 
         public Builder iterationCount(int iterationCount) {

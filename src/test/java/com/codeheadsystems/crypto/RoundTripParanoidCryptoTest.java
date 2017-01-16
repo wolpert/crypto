@@ -3,7 +3,7 @@ package com.codeheadsystems.crypto;
 import com.codeheadsystems.crypto.cipher.CipherProvider;
 import com.codeheadsystems.crypto.cipher.ParanoidDecrypter;
 import com.codeheadsystems.crypto.cipher.ParanoidEncrypter;
-import com.codeheadsystems.crypto.password.ExpiringKeyParameterFactory;
+import com.codeheadsystems.crypto.password.KeyParameterFactory;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
@@ -22,7 +22,7 @@ public class RoundTripParanoidCryptoTest {
 
     public static final String PASSWORD = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
     public static final String CLEAR_TEXT = "This is not a test... wait... it is...";
-    private ExpiringKeyParameterFactory paranoidExpiringKeyParameterFactory;
+    private KeyParameterFactory paranoidKeyParameterFactory;
     private CipherProvider cipherProvider;
 
     @Before
@@ -32,7 +32,7 @@ public class RoundTripParanoidCryptoTest {
 
     @Before
     public void createKeyParameterFactory() {
-        paranoidExpiringKeyParameterFactory = new ExpiringKeyParameterFactory.Builder().iterationCount((int) Math.pow(2, 14)).build();
+        paranoidKeyParameterFactory = new KeyParameterFactory.Builder().iterationCount((int) Math.pow(2, 14)).build();
     }
 
     @Before
@@ -41,13 +41,13 @@ public class RoundTripParanoidCryptoTest {
     }
 
     protected KeyParameterWrapper generate(byte[] salt) {
-        return paranoidExpiringKeyParameterFactory.generate(PASSWORD, Objects.requireNonNull(salt));
+        return paranoidKeyParameterFactory.generate(PASSWORD, Objects.requireNonNull(salt));
     }
 
     @Test
     public void testRoundTrip() throws SecretKeyExpiredException, CryptoException {
         // This test is slow because its using the defaults
-        ExpiringKeyParameterFactory slowDefaultFactory = new ExpiringKeyParameterFactory.Builder().build();
+        KeyParameterFactory slowDefaultFactory = new KeyParameterFactory.Builder().build();
         byte[] salt = CipherProvider.getSalt();
         KeyParameterWrapper encryptKeyParameterWrapper = slowDefaultFactory.generate(PASSWORD, salt);
         assertEquals(256 / 8, encryptKeyParameterWrapper.getKey().length);
@@ -75,7 +75,7 @@ public class RoundTripParanoidCryptoTest {
 
         // rebuild the keyParams
         Decrypter decrypter = new ParanoidDecrypter(cipherProvider);
-        String decryptedText = decrypter.decryptText(paranoidExpiringKeyParameterFactory.generate(PASSWORD, saltString), encryptBytes);
+        String decryptedText = decrypter.decryptText(paranoidKeyParameterFactory.generate(PASSWORD, saltString), encryptBytes);
         assertEquals(CLEAR_TEXT.length(), decryptedText.length());
         assertEquals(CLEAR_TEXT, decryptedText);
     }
@@ -97,7 +97,7 @@ public class RoundTripParanoidCryptoTest {
     public void testInvalidIterationCount() throws SecretKeyExpiredException {
         byte[] salt = CipherProvider.getSalt();
         // rebuild the keyParams
-        new ExpiringKeyParameterFactory.Builder().iterationCount(500).build().generate(PASSWORD, salt);
+        new KeyParameterFactory.Builder().iterationCount(500).build().generate(PASSWORD, salt);
     }
 
     @Test(expected = CryptoException.class)
@@ -107,7 +107,7 @@ public class RoundTripParanoidCryptoTest {
         byte[] encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
         // rebuild the keyParams
         Decrypter decrypter = new ParanoidDecrypter(cipherProvider);
-        decrypter.decryptText(new ExpiringKeyParameterFactory.Builder().iterationCount((int) Math.pow(2, 15)).build().generate(PASSWORD, salt), encryptBytes);
+        decrypter.decryptText(new KeyParameterFactory.Builder().iterationCount((int) Math.pow(2, 15)).build().generate(PASSWORD, salt), encryptBytes);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class RoundTripParanoidCryptoTest {
 
         // encryption
         String clearText = "Super Important Text";
-        ExpiringKeyParameterFactory factory = new ExpiringKeyParameterFactory.Builder()
+        KeyParameterFactory factory = new KeyParameterFactory.Builder()
                 .expirationInMills(20000) // Expire keys in 20 seconds
                 .build();
         String password = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
