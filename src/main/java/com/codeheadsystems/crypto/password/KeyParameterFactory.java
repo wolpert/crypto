@@ -2,6 +2,7 @@ package com.codeheadsystems.crypto.password;
 
 import com.codeheadsystems.crypto.Hasher;
 import com.codeheadsystems.crypto.Utilities;
+import com.codeheadsystems.crypto.hasher.HasherBuilder;
 import com.codeheadsystems.crypto.random.RandomProvider;
 
 import org.bouncycastle.crypto.params.KeyParameter;
@@ -9,18 +10,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.codeheadsystems.crypto.Utilities.stringToBytes;
+import static com.codeheadsystems.crypto.cipher.CipherProvider.KEY_BYTE_SIZE;
 import static java.util.Objects.requireNonNull;
 
 /**
  * BSD-Style License 2016
  */
-public abstract class KeyParameterFactory {
+public class KeyParameterFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(KeyParameterFactory.class);
 
-    protected final RandomProvider randomProvider;
-    protected final long expirationInMills;
-    protected final Hasher hasher;
+    private final RandomProvider randomProvider;
+    private final long expirationInMills;
+    private final Hasher hasher;
 
     protected KeyParameterFactory(long expirationInMills, Hasher hasher) {
         this.expirationInMills = expirationInMills;
@@ -29,10 +31,6 @@ public abstract class KeyParameterFactory {
             logger.error("NOT USING A SECURE RANDOM PROVIDER. USING: " + Utilities.getRandomProvider().getClass().getCanonicalName());
         }
         this.randomProvider = Utilities.getRandomProvider();
-    }
-
-    public byte[] getSalt() {
-        return Utilities.randomBytes(16);
     }
 
     public KeyParameterWrapper generate(String password, String salt) {
@@ -86,22 +84,31 @@ public abstract class KeyParameterFactory {
         return getExpirableKeyParameterWrapper(keyParameter);
     }
 
-    public static abstract class AbstractKeyParameterFactoryBuilder<T extends KeyParameterFactory> {
-        protected int iterationCount = (int) Math.pow(2, 20); // minimum is 2^14. We do 2^20 for this sensitive data
-        protected long expirationInMills = 600000;
+    public static class Builder {
+        private int iterationCount = (int) Math.pow(2, 20); // minimum is 2^14. We do 2^20 for this sensitive data
+        private long expirationInMills = 600000;
 
-        abstract public T build();
+        public KeyParameterFactory build() {
+            Hasher hasher = new HasherBuilder()
+                    .iterations(iterationCount)
+                    .saltSize(KEY_BYTE_SIZE) // 256 bit
+                    .build();
+            return new KeyParameterFactory(expirationInMills, hasher);
+        }
 
-        public AbstractKeyParameterFactoryBuilder iterationCount(int iterationCount) {
+        public Builder iterationCount(int iterationCount) {
+            if (iterationCount < 16384) {
+                throw new IllegalArgumentException("Unable to have an iteration count less then 16384: found " + iterationCount);
+            }
             this.iterationCount = iterationCount;
             return this;
         }
 
-        public AbstractKeyParameterFactoryBuilder expirationInMins(int expirationInMins) {
+        public Builder expirationInMins(int expirationInMins) {
             return expirationInMills(expirationInMins * 60000);
         }
 
-        public AbstractKeyParameterFactoryBuilder expirationInMills(long expirationInMills) {
+        public Builder expirationInMills(long expirationInMills) {
             this.expirationInMills = expirationInMills;
             return this;
         }

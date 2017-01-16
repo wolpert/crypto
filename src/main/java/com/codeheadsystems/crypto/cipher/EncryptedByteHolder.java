@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 
 import static com.codeheadsystems.crypto.Utilities.bytesToString;
-import static com.codeheadsystems.crypto.cipher.ParanoidCipherProvider.BLOCK_LENGTH;
+import static com.codeheadsystems.crypto.cipher.CipherProvider.KEY_BYTE_SIZE;
 
 /**
  * BSD-Style License 2016
@@ -32,10 +32,10 @@ public class EncryptedByteHolder implements Serializable {
     }
 
     public static EncryptedByteHolder fromBytes(byte[] a) {
-        byte[] iv = new byte[BLOCK_LENGTH];
-        System.arraycopy(a, 0, iv, 0, BLOCK_LENGTH);
-        byte[] encryptedBytes = new byte[a.length - BLOCK_LENGTH];
-        System.arraycopy(a, BLOCK_LENGTH, encryptedBytes, 0, encryptedBytes.length);
+        byte[] iv = new byte[KEY_BYTE_SIZE];
+        System.arraycopy(a, 0, iv, 0, KEY_BYTE_SIZE);
+        byte[] encryptedBytes = new byte[a.length - KEY_BYTE_SIZE];
+        System.arraycopy(a, KEY_BYTE_SIZE, encryptedBytes, 0, encryptedBytes.length);
         return new EncryptedByteHolder(encryptedBytes, iv);
     }
 

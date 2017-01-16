@@ -1,6 +1,7 @@
 package com.codeheadsystems.crypto.password;
 
 import com.codeheadsystems.crypto.Utilities;
+import com.codeheadsystems.crypto.cipher.CipherProvider;
 import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
 
 import org.junit.Before;
@@ -22,11 +23,11 @@ public class StandardExpirationHandlerTest {
 
     @Test
     public void testFullExpiration() throws SecretKeyExpiredException, InterruptedException {
-        KeyParameterFactory keyParameterFactory = new ScryptKeyParameterFactory.Builder()
+        KeyParameterFactory keyParameterFactory = new KeyParameterFactory.Builder()
                 .iterationCount(16384)
                 .expirationInMills(400)
                 .build();
-        byte[] salt = keyParameterFactory.getSalt();
+        byte[] salt = CipherProvider.getSalt();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt);
         assertNotNull(keyParameterWrapper.getKey());
         Thread.sleep(500);
@@ -40,33 +41,33 @@ public class StandardExpirationHandlerTest {
 
     @Test
     public void testDidNotExpire() throws SecretKeyExpiredException {
-        KeyParameterFactory keyParameterFactory = new ScryptKeyParameterFactory.Builder()
+        KeyParameterFactory keyParameterFactory = new KeyParameterFactory.Builder()
                 .iterationCount(16384)
                 .expirationInMills(500)
                 .build();
-        byte[] salt = keyParameterFactory.getSalt();
+        byte[] salt = CipherProvider.getSalt();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt);
         assertNotNull(keyParameterWrapper.getKey());
     }
 
     @Test
     public void testDidNotExpireWithNoTime() throws SecretKeyExpiredException {
-        KeyParameterFactory keyParameterFactory = new ScryptKeyParameterFactory.Builder()
+        KeyParameterFactory keyParameterFactory = new KeyParameterFactory.Builder()
                 .iterationCount(16384)
                 .expirationInMills(0)
                 .build();
-        byte[] salt = keyParameterFactory.getSalt();
+        byte[] salt = CipherProvider.getSalt();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt); // no salt
         assertNotNull(keyParameterWrapper.getKey());
     }
 
     @Test(expected = SecretKeyExpiredException.class)
     public void testDidExpire() throws SecretKeyExpiredException, InterruptedException {
-        KeyParameterFactory keyParameterFactory = new ScryptKeyParameterFactory.Builder()
+        KeyParameterFactory keyParameterFactory = new KeyParameterFactory.Builder()
                 .iterationCount(16384)
                 .expirationInMills(50)
                 .build();
-        byte[] salt = keyParameterFactory.getSalt();
+        byte[] salt = CipherProvider.getSalt();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt); // no salt
         Thread.sleep(100);
         assertNotNull(keyParameterWrapper.getKey());

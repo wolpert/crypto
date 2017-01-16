@@ -3,11 +3,11 @@ package com.codeheadsystems.crypto.manager;
 import com.codeheadsystems.crypto.CryptoException;
 import com.codeheadsystems.crypto.Decrypter;
 import com.codeheadsystems.crypto.Encrypter;
+import com.codeheadsystems.crypto.cipher.CipherProvider;
 import com.codeheadsystems.crypto.cipher.ParanoidDecrypter;
 import com.codeheadsystems.crypto.cipher.ParanoidEncrypter;
 import com.codeheadsystems.crypto.password.KeyParameterFactory;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
-import com.codeheadsystems.crypto.password.ScryptKeyParameterFactory;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 
 import org.bouncycastle.crypto.params.KeyParameter;
@@ -33,9 +33,10 @@ public class ParanoidManager implements Manager {
 
     public ParanoidManager(int iterationExponential) {
         objectManipulator = new ObjectManipulator();
-        encrypter = new ParanoidEncrypter();
-        decrypter = new ParanoidDecrypter();
-        KeyParameterFactory.AbstractKeyParameterFactoryBuilder builder = new ScryptKeyParameterFactory.Builder();
+        CipherProvider cipherProvider = new CipherProvider();
+        encrypter = new ParanoidEncrypter(cipherProvider);
+        decrypter = new ParanoidDecrypter(cipherProvider);
+        KeyParameterFactory.Builder builder = new KeyParameterFactory.Builder();
         builder.iterationCount((int) Math.pow(2, iterationExponential));
         shortTermKeyParameterFactory = builder.expirationInMills(20000).build(); // 20 second
         longTermKeyParameterFactory = builder.expirationInMills(10 * 60 * 1000).build(); // 10 mins
@@ -52,7 +53,7 @@ public class ParanoidManager implements Manager {
 
     @Override
     public byte[] freshSalt() {
-        return shortTermKeyParameterFactory.getSalt();
+        return CipherProvider.getSalt();
     }
 
     @Override

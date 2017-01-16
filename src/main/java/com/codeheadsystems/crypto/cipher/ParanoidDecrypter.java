@@ -6,7 +6,6 @@ import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
-import org.bouncycastle.crypto.modes.AEADBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.slf4j.Logger;
@@ -18,9 +17,15 @@ import static com.codeheadsystems.crypto.Utilities.reduce;
 /**
  * BSD-Style License 2016
  */
-public class ParanoidDecrypter extends ParanoidCipherProvider implements Decrypter {
+public class ParanoidDecrypter implements Decrypter {
 
     private static final Logger logger = LoggerFactory.getLogger(ParanoidDecrypter.class);
+
+    private final CipherProvider cipherProvider;
+
+    public ParanoidDecrypter(CipherProvider cipherProvider) {
+        this.cipherProvider = cipherProvider;
+    }
 
     @Override
     public String decryptText(KeyParameterWrapper keyParameterWrapper, String encryptedText) throws CryptoException, SecretKeyExpiredException {
@@ -51,15 +56,16 @@ public class ParanoidDecrypter extends ParanoidCipherProvider implements Decrypt
     public byte[] decryptBytes(KeyParameter keyParameter, byte[] encryptedBytes) throws CryptoException {
         logger.debug("decryptBytes()");
         try {
-            EncryptedByteHolder encryptedByteHolder = EncryptedByteHolder.fromBytes(encryptedBytes);
-            AEADBlockCipher cipher = getCipher();
-            ParametersWithIV keyWithIv = new ParametersWithIV(keyParameter, encryptedByteHolder.getIv());
-            cipher.init(false, keyWithIv);
-            byte[] cipherBytes = encryptedByteHolder.getEncryptedBytes();
-            byte[] decryptedBytes = new byte[cipher.getOutputSize(cipherBytes.length)];
-            final int length1 = cipher.processBytes(cipherBytes, 0, cipherBytes.length, decryptedBytes, 0);
-            final int length2 = cipher.doFinal(decryptedBytes, length1);
-            return reduce(decryptedBytes, length1 + length2);
+            return cipherProvider.callWithCipher((cipher) -> {
+                EncryptedByteHolder encryptedByteHolder = EncryptedByteHolder.fromBytes(encryptedBytes);
+                ParametersWithIV keyWithIv = new ParametersWithIV(keyParameter, encryptedByteHolder.getIv());
+                cipher.init(false, keyWithIv);
+                byte[] cipherBytes = encryptedByteHolder.getEncryptedBytes();
+                byte[] decryptedBytes = new byte[cipher.getOutputSize(cipherBytes.length)];
+                final int length1 = cipher.processBytes(cipherBytes, 0, cipherBytes.length, decryptedBytes, 0);
+                final int length2 = cipher.doFinal(decryptedBytes, length1);
+                return reduce(decryptedBytes, length1 + length2);
+            });
         } catch (InvalidCipherTextException e) {
             throw new CryptoException("Unable to decrypt bytes due to " + e.getLocalizedMessage(), e);
         }
