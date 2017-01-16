@@ -2,6 +2,9 @@ package com.codeheadsystems.crypto.types;
 
 import com.codeheadsystems.crypto.Utilities;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -13,6 +16,8 @@ import static java.util.Objects.requireNonNull;
  * BSD-Style License 2017
  */
 public class TemporaryObject<T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(TemporaryObject.class);
 
     private static final Timer timer = new Timer("TemporaryObjectTimer", true);
     private final long millsToExpire;
@@ -45,6 +50,7 @@ public class TemporaryObject<T> {
         this.millsToExpire = millsToExpire;
         this.destroyer = destroyer;
         setTimerTask();
+        logger.debug("TemporaryObject({},{},{})", value.getClass(), millsToExpire, destroyer);
     }
 
     public static TemporaryObject<byte[]> getTemporaryBytes(byte[] bytes, long millsToExpire) {
