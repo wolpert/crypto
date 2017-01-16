@@ -20,17 +20,17 @@ public class KeyParameterFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(KeyParameterFactory.class);
 
-    private final RandomProvider randomProvider;
     private final long expirationInMills;
     private final Hasher hasher;
+    private final RandomProvider randomProvider;
 
-    protected KeyParameterFactory(long expirationInMills, Hasher hasher) {
+    protected KeyParameterFactory(long expirationInMills, Hasher hasher, RandomProvider randomProvider) {
         this.expirationInMills = expirationInMills;
         this.hasher = requireNonNull(hasher);
-        if (!Utilities.isSecureRandomProvider()) {
-            logger.error("NOT USING A SECURE RANDOM PROVIDER. USING: " + Utilities.getRandomProvider().getClass().getCanonicalName());
+        if (!Utilities.isSecureRandomProvider(randomProvider)) {
+            logger.error("NOT USING A SECURE RANDOM PROVIDER. USING: " + randomProvider.getClass().getCanonicalName());
         }
-        this.randomProvider = Utilities.getRandomProvider();
+        this.randomProvider = randomProvider;
     }
 
     public KeyParameterWrapper generate(String password, String salt) {
@@ -87,13 +87,15 @@ public class KeyParameterFactory {
     public static class Builder {
         private int iterationCount = (int) Math.pow(2, 20); // minimum is 2^14. We do 2^20 for this sensitive data
         private long expirationInMills = 600000;
+        private RandomProvider randomProvider;
 
         public KeyParameterFactory build() {
             Hasher hasher = new HasherBuilder()
                     .iterations(iterationCount)
                     .saltSize(KEY_BYTE_SIZE) // 256 bit
+                    .randomProvider(randomProvider)
                     .build();
-            return new KeyParameterFactory(expirationInMills, hasher);
+            return new KeyParameterFactory(expirationInMills, hasher, randomProvider);
         }
 
         public Builder iterationCount(int iterationCount) {
@@ -106,6 +108,11 @@ public class KeyParameterFactory {
 
         public Builder expirationInMins(int expirationInMins) {
             return expirationInMills(expirationInMins * 60000);
+        }
+
+        public Builder randomProvider(RandomProvider randomProvider) {
+            this.randomProvider = randomProvider;
+            return this;
         }
 
         public Builder expirationInMills(long expirationInMills) {

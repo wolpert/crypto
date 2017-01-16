@@ -90,9 +90,9 @@ public class TemporaryObject<T> {
      * that was returned.
      *
      * @param caller that will use the value given here.
-     * @param <E> Expected exception to be thrown
+     * @param <E>    Expected exception to be thrown
      * @throws TemporaryObjectExpiredException if the value is gone
-     * @throws E as defined by the caller
+     * @throws E                               as defined by the caller
      */
     public <E extends Exception> void callWithValue(ExceptionConsumer<T, E> caller) throws TemporaryObjectExpiredException, E {
         synchronized (this) {
@@ -111,11 +111,11 @@ public class TemporaryObject<T> {
      * that was returned.
      *
      * @param function that will use the value given here, returning a result
-     * @param <R> Expected return type
-     * @param <E> Expected exception to be thrown
+     * @param <R>      Expected return type
+     * @param <E>      Expected exception to be thrown
+     * @return R which resulted from the function
      * @throws TemporaryObjectExpiredException if the value is gone
      * @throws E                               as defined by the caller
-     * @return R which resulted from the function
      */
     public <R, E extends Exception> R applyWithValue(ExceptionFunction<T, R, E> function) throws TemporaryObjectExpiredException, E {
         synchronized (this) {

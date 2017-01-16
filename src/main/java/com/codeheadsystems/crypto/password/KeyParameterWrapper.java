@@ -40,11 +40,11 @@ public class KeyParameterWrapper {
      * be destroyed while proforming this action.
      *
      * @param function that will take he key parameter, returning any object.
-     * @param <R> The resulting object from the function
-     * @param <E> The possible exception thrown by this function, not including the expiring exception
+     * @param <R>      The resulting object from the function
+     * @param <E>      The possible exception thrown by this function, not including the expiring exception
      * @return The R as defined above.
      * @throws SecretKeyExpiredException thrown should the key have expired
-     * @throws E Any underlying exception that could have been thrown. If the underlying exception can throw multiple exceptions, you must catch Exception itself. (Sorry!)
+     * @throws E                         Any underlying exception that could have been thrown. If the underlying exception can throw multiple exceptions, you must catch Exception itself. (Sorry!)
      */
     public <R, E extends Exception> R processWithKeyParameter(ExceptionFunction<KeyParameter, R, E> function) throws SecretKeyExpiredException, E {
         try {

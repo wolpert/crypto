@@ -1,5 +1,8 @@
 package com.codeheadsystems.crypto.cipher;
 
+import com.codeheadsystems.crypto.random.RandomProvider;
+import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
+
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.modes.AEADBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
@@ -29,15 +32,21 @@ import static junit.framework.TestCase.assertTrue;
 public class CipherProviderTest {
 
     private CipherProvider cipherProvider;
+    private RandomProvider randomProvider;
 
     @Before
     public void setCipherProvider() {
         cipherProvider = new CipherProvider();
     }
 
+    @Before
+    public void setRandomProvider() {
+        randomProvider = new UnsecureRandomProvider();
+    }
+
     @Test
     public void checkRandomIVSize() {
-        assertEquals(32, cipherProvider.getRandomIV().length);
+        assertEquals(32, randomProvider.getRandomIV().length);
     }
 
     @Test
@@ -70,7 +79,7 @@ public class CipherProviderTest {
         random.nextBytes(clearBytes);
         byte[] key = new byte[CipherProvider.KEY_BYTE_SIZE];
         random.nextBytes(key);
-        byte[] iv = CipherProvider.getRandomIV();
+        byte[] iv = randomProvider.getRandomIV();
         assertEquals(32, iv.length); // 256 bits
         assertEquals(32, key.length); // 256 bits
 

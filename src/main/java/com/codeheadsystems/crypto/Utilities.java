@@ -5,8 +5,6 @@ import com.codeheadsystems.crypto.random.SecureRandomProvider;
 
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.Hex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
 import java.util.UUID;
@@ -18,34 +16,14 @@ import static java.lang.System.arraycopy;
  */
 public class Utilities {
 
-    private static final Logger logger = LoggerFactory.getLogger(Utilities.class);
-
-    private static RandomProvider randomProvider;
-
-    public static synchronized RandomProvider getRandomProvider() {
-        if (randomProvider == null) {
-            randomProvider = new SecureRandomProvider();
-            logger.info("Secure random provider is set");
-        }
-        return randomProvider;
-    }
-
-    public static synchronized void setRandomProvider(RandomProvider incomingRandomProvider) {
-        if (randomProvider == null) {
-            logger.warn("Manually setting the random provider: " + incomingRandomProvider);
-            randomProvider = incomingRandomProvider;
-        } else {
-            logger.error("Random provider already set. " + randomProvider + ":" + incomingRandomProvider);
-        }
-    }
-
     /**
      * Call this method once to validate the random provider is using the secure provider.
      *
+     * @param randomProvider that is being checked
      * @return boolean
      */
-    public static boolean isSecureRandomProvider() {
-        return getRandomProvider().getClass().equals(SecureRandomProvider.class);
+    public static boolean isSecureRandomProvider(RandomProvider randomProvider) {
+        return randomProvider.equals(SecureRandomProvider.class);
     }
 
     public static byte[] reduce(byte[] bytes, int length) {
@@ -70,10 +48,6 @@ public class Utilities {
             result = (a1[i] == a2[i]) && result;
         }
         return result;
-    }
-
-    public static byte[] randomBytes(int size) {
-        return getRandomProvider().randomBytes(size);
     }
 
     public static Charset getCharset() {

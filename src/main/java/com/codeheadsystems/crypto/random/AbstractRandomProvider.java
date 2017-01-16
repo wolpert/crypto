@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
+import static com.codeheadsystems.crypto.cipher.CipherProvider.KEY_BYTE_SIZE;
+
 /**
  * BSD-Style License 2016
  */
@@ -35,5 +37,13 @@ public abstract class AbstractRandomProvider implements RandomProvider {
         byte[] result = new byte[size];
         getRandom().nextBytes(result);
         return result;
+    }
+
+    public byte[] getRandomIV() {
+        return randomBytes(KEY_BYTE_SIZE);
+    }
+
+    public byte[] getSalt() {
+        return randomBytes(KEY_BYTE_SIZE);
     }
 }

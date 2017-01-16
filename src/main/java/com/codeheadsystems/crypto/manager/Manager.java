@@ -77,7 +77,7 @@ public interface Manager {
      * Given an existing encrypted byte set, will regenerate a SecondaryKey using the same password/salt combo
      * provided in the original generation.
      *
-     * @param secondaryKey The key used to decrypt the encryptedSecondary
+     * @param secondaryKey       The key used to decrypt the encryptedSecondary
      * @param encryptedSecondary The bytes stored in the original SecondaryKey.
      * @return a new SecondaryKey with the proper contents needed for decrypting usagel
      * @throws SecretKeyExpiredException Though uncommon, can happen if the system is too slow to encrypt the secondary key.

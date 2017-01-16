@@ -1,6 +1,7 @@
 package com.codeheadsystems.crypto.hasher;
 
 import com.codeheadsystems.crypto.Hasher;
+import com.codeheadsystems.crypto.random.RandomProvider;
 
 /**
  * BSD-Style License 2016
@@ -12,6 +13,7 @@ public class HasherBuilder {
     private int r = 8;
     private int p = 1;
     private int dkLen = 32; // bytes, not bits
+    private RandomProvider randomProvider;
 
     public HasherBuilder saltSize(int saltSize) {
         this.saltSize = saltSize;
@@ -20,6 +22,11 @@ public class HasherBuilder {
 
     public HasherBuilder iterations(int iterations) {
         this.iterations = iterations;
+        return this;
+    }
+
+    public HasherBuilder randomProvider(RandomProvider randomProvider) {
+        this.randomProvider = randomProvider;
         return this;
     }
 
@@ -39,6 +46,6 @@ public class HasherBuilder {
     }
 
     public Hasher build() {
-        return new ScryptHasher(saltSize, iterations, r, p, dkLen);
+        return new ScryptHasher(saltSize, iterations, r, p, dkLen, randomProvider);
     }
 }

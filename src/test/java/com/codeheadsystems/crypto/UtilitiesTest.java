@@ -1,31 +1,16 @@
 package com.codeheadsystems.crypto;
 
-import com.codeheadsystems.crypto.random.SecureRandomProvider;
 import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static com.codeheadsystems.crypto.Utilities.add;
-import static com.codeheadsystems.crypto.Utilities.randomBytes;
 import static junit.framework.TestCase.assertEquals;
 
 /**
  * BSD-Style License 2016
  */
 public class UtilitiesTest {
-
-    @Before
-    public void setRandomFactory() {
-        Utilities.setRandomProvider(new UnsecureRandomProvider());
-    }
-
-    @Test
-    public void checkForFailureInResettingRandomProvider() {
-        Utilities.setRandomProvider(new SecureRandomProvider());
-        assertEquals(UnsecureRandomProvider.class, Utilities.getRandomProvider().getClass()); // Already set once via the before.
-        assertEquals(false, Utilities.isSecureRandomProvider());
-    }
 
     @Test
     public void testAddWorks() {
@@ -41,13 +26,13 @@ public class UtilitiesTest {
 
     @Test
     public void testGetRandomBites() {
-        byte[] array = randomBytes(10);
+        byte[] array = new UnsecureRandomProvider().randomBytes(10);
         assertEquals(10, array.length);
     }
 
     @Test
     public void hexConversion() {
-        byte[] array = randomBytes(200);
+        byte[] array = new UnsecureRandomProvider().randomBytes(200);
         String hexString = Utilities.toHex(array);
         byte[] resultingArray = Utilities.fromHex(hexString);
         for (int i = 0; i < array.length; i++) {

@@ -4,6 +4,7 @@ import com.codeheadsystems.crypto.CryptoException;
 import com.codeheadsystems.crypto.Encrypter;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
+import com.codeheadsystems.crypto.random.RandomProvider;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.KeyParameter;
@@ -22,9 +23,11 @@ public class ParanoidEncrypter implements Encrypter {
     private final static Logger logger = LoggerFactory.getLogger(ParanoidEncrypter.class);
 
     private final CipherProvider cipherProvider;
+    private final RandomProvider randomProvider;
 
-    public ParanoidEncrypter(CipherProvider cipherProvider) {
+    public ParanoidEncrypter(CipherProvider cipherProvider, RandomProvider randomProvider) {
         this.cipherProvider = cipherProvider;
+        this.randomProvider = randomProvider;
     }
 
     @Override
@@ -47,7 +50,7 @@ public class ParanoidEncrypter implements Encrypter {
         logger.debug("encryptBytes()");
         try {
             return cipherProvider.callWithCipher((cipher) -> {
-                byte[] iv = CipherProvider.getRandomIV();
+                byte[] iv = randomProvider.getRandomIV();
 
                 ParametersWithIV keyWithIv = new ParametersWithIV(keyParameter, iv);
                 cipher.init(true, keyWithIv);

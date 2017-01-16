@@ -1,13 +1,14 @@
 package com.codeheadsystems.crypto.types;
 
 import com.codeheadsystems.crypto.Utilities;
+import com.codeheadsystems.crypto.random.RandomProvider;
+import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
 
 import org.junit.Test;
 
 import java.util.Optional;
 
 import static com.codeheadsystems.crypto.Utilities.cloneBytes;
-import static com.codeheadsystems.crypto.Utilities.randomBytes;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -18,6 +19,8 @@ import static org.junit.Assert.assertTrue;
 
 public class TemporaryObjectTest {
 
+    private RandomProvider randomProvider = new UnsecureRandomProvider();
+
     @Test
     public void testDefaultBehavior() throws TemporaryObjectExpiredException {
         TemporaryObject<String> to = new TemporaryObject<>("blah");
@@ -27,7 +30,6 @@ public class TemporaryObjectTest {
         to.callWithValue((str) -> assertEquals("blah", str));
         assertEquals("blah1", to.applyWithValue((str) -> str + "1"));
     }
-
 
     private void sleep(long mills) {
         try {
@@ -60,7 +62,7 @@ public class TemporaryObjectTest {
 
     @Test
     public void testGetTempBytesDefaultBehavior() throws TemporaryObjectExpiredException {
-        byte[] array = randomBytes(5);
+        byte[] array = randomProvider.randomBytes(5);
         TemporaryObject<byte[]> to = TemporaryObject.getTemporaryBytes(cloneBytes(array), 2000);
         Optional<byte[]> value = to.getValue();
         assertTrue(value.isPresent());
@@ -71,7 +73,7 @@ public class TemporaryObjectTest {
 
     @Test
     public void testDestroyMethod() {
-        byte[] array = randomBytes(5);
+        byte[] array = randomProvider.randomBytes(5);
         TemporaryObject<byte[]> to = TemporaryObject.getTemporaryBytes(cloneBytes(array), 100);
         Optional<byte[]> value = to.getValue();
         assertTrue(value.isPresent());

@@ -1,9 +1,9 @@
 package com.codeheadsystems.crypto.manager;
 
 import com.codeheadsystems.crypto.CryptoException;
-import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
+import com.codeheadsystems.crypto.random.RandomProvider;
 import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
 
 import org.junit.Before;
@@ -24,15 +24,16 @@ public class ParanoidManagerTest {
 
     private Manager manager;
     private KeyParameterWrapper keyParameterWrapper;
+    private RandomProvider randomProvider;
 
     @Before
     public void setRandomFactory() {
-        Utilities.setRandomProvider(new UnsecureRandomProvider());
+        randomProvider = new UnsecureRandomProvider();
     }
 
     @Before
     public void init() throws ParanoidManagerException {
-        manager = new ParanoidManager();
+        manager = new ParanoidManager(14, randomProvider);
         keyParameterWrapper = new KeyParameterWrapper(manager.generateRandomAesKey());
     }
 

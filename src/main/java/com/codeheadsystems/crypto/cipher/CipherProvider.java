@@ -1,6 +1,5 @@
 package com.codeheadsystems.crypto.cipher;
 
-import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.types.ExceptionFunction;
 
 import org.bouncycastle.crypto.engines.AESFastEngine;
@@ -9,7 +8,6 @@ import org.bouncycastle.crypto.modes.GCMBlockCipher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.codeheadsystems.crypto.Utilities.randomBytes;
 
 /**
  * BSD-Style License 2016
@@ -18,14 +16,6 @@ public class CipherProvider {
 
     public final static int KEY_BYTE_SIZE = 32;
     private final static Logger logger = LoggerFactory.getLogger(CipherProvider.class);
-
-    public static byte[] getRandomIV() {
-        return randomBytes(KEY_BYTE_SIZE);
-    }
-
-    public static byte[] getSalt() {
-        return randomBytes(KEY_BYTE_SIZE);
-    }
 
     private ThreadLocal<AEADBlockCipher> aeadBlockCipherThreadLocal = ThreadLocal.withInitial(() -> {
         logger.debug("initCipher();");
@@ -51,8 +41,8 @@ public class CipherProvider {
      * used in a thread-local way, this would make sense.
      *
      * @param function that does the work.
-     * @param <R> Return type
-     * @param <E> Possible Exception.
+     * @param <R>      Return type
+     * @param <E>      Possible Exception.
      * @return An instance of what R was
      * @throws E some exception that could be thrown in the clause
      */

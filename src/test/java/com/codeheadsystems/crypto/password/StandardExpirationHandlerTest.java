@@ -2,6 +2,7 @@ package com.codeheadsystems.crypto.password;
 
 import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.cipher.CipherProvider;
+import com.codeheadsystems.crypto.random.RandomProvider;
 import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
 
 import org.junit.Before;
@@ -16,18 +17,16 @@ public class StandardExpirationHandlerTest {
 
     public static final String PASSWORD = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
 
-    @Before
-    public void setRandomFactory() {
-        Utilities.setRandomProvider(new UnsecureRandomProvider());
-    }
+    private RandomProvider randomProvider = new UnsecureRandomProvider();
 
     @Test
     public void testFullExpiration() throws SecretKeyExpiredException, InterruptedException {
         KeyParameterFactory keyParameterFactory = new KeyParameterFactory.Builder()
                 .iterationCount(16384)
                 .expirationInMills(400)
+                .randomProvider(randomProvider)
                 .build();
-        byte[] salt = CipherProvider.getSalt();
+        byte[] salt = randomProvider.getSalt();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt);
         assertNotNull(keyParameterWrapper.getKey());
         Thread.sleep(500);
@@ -44,8 +43,9 @@ public class StandardExpirationHandlerTest {
         KeyParameterFactory keyParameterFactory = new KeyParameterFactory.Builder()
                 .iterationCount(16384)
                 .expirationInMills(500)
+                .randomProvider(randomProvider)
                 .build();
-        byte[] salt = CipherProvider.getSalt();
+        byte[] salt = randomProvider.getSalt();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt);
         assertNotNull(keyParameterWrapper.getKey());
     }
@@ -55,8 +55,9 @@ public class StandardExpirationHandlerTest {
         KeyParameterFactory keyParameterFactory = new KeyParameterFactory.Builder()
                 .iterationCount(16384)
                 .expirationInMills(0)
+                .randomProvider(randomProvider)
                 .build();
-        byte[] salt = CipherProvider.getSalt();
+        byte[] salt = randomProvider.getSalt();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt); // no salt
         assertNotNull(keyParameterWrapper.getKey());
     }
@@ -66,8 +67,9 @@ public class StandardExpirationHandlerTest {
         KeyParameterFactory keyParameterFactory = new KeyParameterFactory.Builder()
                 .iterationCount(16384)
                 .expirationInMills(50)
+                .randomProvider(randomProvider)
                 .build();
-        byte[] salt = CipherProvider.getSalt();
+        byte[] salt = randomProvider.getSalt();
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt); // no salt
         Thread.sleep(100);
         assertNotNull(keyParameterWrapper.getKey());

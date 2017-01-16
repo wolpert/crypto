@@ -2,13 +2,13 @@ package com.codeheadsystems.crypto.hasher;
 
 import com.codeheadsystems.crypto.Hasher;
 import com.codeheadsystems.crypto.Utilities;
+import com.codeheadsystems.crypto.random.RandomProvider;
 
 import org.bouncycastle.crypto.generators.SCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.codeheadsystems.crypto.Utilities.getCharset;
-import static com.codeheadsystems.crypto.Utilities.randomBytes;
 
 /**
  * Uses bouncy castle version of scrypt. Basically ignores most of the configuration
@@ -23,13 +23,15 @@ public class ScryptHasher implements Hasher {
     private final int r; // 8
     private final int p; // 1
     private final int dkLen; // 32 bytes, not bits. This is for AES-256
+    private final RandomProvider randomProvider;
 
-    public ScryptHasher(int saltSize, int iterations, int r, int p, int dkLen) {
+    public ScryptHasher(int saltSize, int iterations, int r, int p, int dkLen, RandomProvider randomProvider) {
         this.saltSize = saltSize;
         this.iterations = iterations;
         this.r = r;
         this.p = p;
         this.dkLen = dkLen;
+        this.randomProvider = randomProvider;
         if (iterations < 16384) {
             throw new IllegalArgumentException("Unable to have an iteration count less then 16384: found " + iterations);
         }
@@ -37,7 +39,7 @@ public class ScryptHasher implements Hasher {
     }
 
     public byte[] getSalt() {
-        return randomBytes(saltSize);
+        return randomProvider.randomBytes(saltSize);
     }
 
     @Override
