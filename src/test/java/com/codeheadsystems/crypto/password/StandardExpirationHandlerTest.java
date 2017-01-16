@@ -1,11 +1,8 @@
 package com.codeheadsystems.crypto.password;
 
-import com.codeheadsystems.crypto.Utilities;
-import com.codeheadsystems.crypto.cipher.CipherProvider;
 import com.codeheadsystems.crypto.random.RandomProvider;
 import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
