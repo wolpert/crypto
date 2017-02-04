@@ -42,13 +42,13 @@ Actually, do not trust me. Look at the code. See what it does and how it does it
 The encryption routines are fairly basic. Comment on the github page if you have any suggestions.
 
 ## Gradle ##
-    compile "com.codeheadsystems:crypto:1.0.0"
+    compile "com.codeheadsystems:crypto:1.0.2"
 
 ## Maven ##
     <dependency>
       <groupId>com.codeheadsystems</groupId>
       <artifactId>crypto</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.2</version>
     </dependency>
 
 ## Expected Use-case ##

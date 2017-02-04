@@ -4,7 +4,6 @@ import com.codeheadsystems.crypto.Utilities;
 import com.codeheadsystems.crypto.types.ExceptionFunction;
 import com.codeheadsystems.crypto.types.TemporaryObject;
 import com.codeheadsystems.crypto.types.TemporaryObjectExpiredException;
-
 import org.bouncycastle.crypto.params.KeyParameter;
 
 /**

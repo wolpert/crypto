@@ -2,7 +2,6 @@ package com.codeheadsystems.crypto.manager;
 
 import com.codeheadsystems.crypto.CryptoException;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
-
 import org.bouncycastle.crypto.params.KeyParameter;
 
 import java.io.IOException;

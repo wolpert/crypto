@@ -1,8 +1,6 @@
 package com.codeheadsystems.crypto.cipher;
 
-import com.codeheadsystems.crypto.random.RandomProvider;
-import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
-
+import com.codeheadsystems.shash.impl.RandomProvider;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.modes.AEADBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
@@ -17,13 +15,9 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 
 import static com.codeheadsystems.crypto.Utilities.isSame;
+import static com.codeheadsystems.crypto.cipher.CipherProvider.KEY_BYTE_SIZE;
 import static java.lang.System.arraycopy;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNotSame;
-import static junit.framework.TestCase.assertSame;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.*;
 
 /**
  * BSD-Style License 2017
@@ -41,12 +35,12 @@ public class CipherProviderTest {
 
     @Before
     public void setRandomProvider() {
-        randomProvider = new UnsecureRandomProvider();
+        randomProvider = RandomProvider.generate(Random::new);
     }
 
     @Test
     public void checkRandomIVSize() {
-        assertEquals(32, randomProvider.getRandomIV().length);
+        assertEquals(32, KEY_BYTE_SIZE);
     }
 
     @Test
@@ -77,9 +71,9 @@ public class CipherProviderTest {
         Random random = new Random();
         byte[] clearBytes = new byte[1025]; // Requires weird number of bytes
         random.nextBytes(clearBytes);
-        byte[] key = new byte[CipherProvider.KEY_BYTE_SIZE];
+        byte[] key = new byte[KEY_BYTE_SIZE];
         random.nextBytes(key);
-        byte[] iv = randomProvider.getRandomIV();
+        byte[] iv = randomProvider.getRandomBytes(KEY_BYTE_SIZE);
         assertEquals(32, iv.length); // 256 bits
         assertEquals(32, key.length); // 256 bits
 

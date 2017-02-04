@@ -4,8 +4,7 @@ import com.codeheadsystems.crypto.CryptoException;
 import com.codeheadsystems.crypto.Encrypter;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
-import com.codeheadsystems.crypto.random.RandomProvider;
-
+import com.codeheadsystems.shash.impl.RandomProvider;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
@@ -14,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import static com.codeheadsystems.crypto.Utilities.getCharset;
 import static com.codeheadsystems.crypto.Utilities.reduce;
+import static com.codeheadsystems.crypto.cipher.CipherProvider.KEY_BYTE_SIZE;
 
 /**
  * BSD-Style License 2016
@@ -50,7 +50,7 @@ public class ParanoidEncrypter implements Encrypter {
         logger.debug("encryptBytes()");
         try {
             return cipherProvider.callWithCipher((cipher) -> {
-                byte[] iv = randomProvider.getRandomIV();
+                byte[] iv = randomProvider.getRandomBytes(KEY_BYTE_SIZE);
 
                 ParametersWithIV keyWithIv = new ParametersWithIV(keyParameter, iv);
                 cipher.init(true, keyWithIv);

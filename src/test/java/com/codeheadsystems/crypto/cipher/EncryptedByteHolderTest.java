@@ -1,8 +1,9 @@
 package com.codeheadsystems.crypto.cipher;
 
-import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
-
+import com.codeheadsystems.shash.impl.RandomProvider;
 import org.junit.Test;
+
+import java.util.Random;
 
 import static com.codeheadsystems.crypto.cipher.CipherProvider.KEY_BYTE_SIZE;
 import static junit.framework.TestCase.assertEquals;
@@ -14,8 +15,9 @@ public class EncryptedByteHolderTest {
 
     @Test
     public void testTextRoundTrip() {
-        byte[] iv = new UnsecureRandomProvider().randomBytes(KEY_BYTE_SIZE);
-        byte[] encryptedBytes = new UnsecureRandomProvider().randomBytes(102);
+        RandomProvider randomProvider = RandomProvider.generate(Random::new);
+        byte[] iv = randomProvider.getRandomBytes(KEY_BYTE_SIZE);
+        byte[] encryptedBytes = randomProvider.getRandomBytes(102);
         EncryptedByteHolder encryptedByteHolder = new EncryptedByteHolder(encryptedBytes, iv);
         String output = encryptedByteHolder.toString();
         System.out.print(output);

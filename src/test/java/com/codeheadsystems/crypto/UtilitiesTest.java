@@ -1,8 +1,9 @@
 package com.codeheadsystems.crypto;
 
-import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
-
+import com.codeheadsystems.shash.impl.RandomProvider;
 import org.junit.Test;
+
+import java.util.Random;
 
 import static com.codeheadsystems.crypto.Utilities.add;
 import static junit.framework.TestCase.assertEquals;
@@ -26,13 +27,13 @@ public class UtilitiesTest {
 
     @Test
     public void testGetRandomBites() {
-        byte[] array = new UnsecureRandomProvider().randomBytes(10);
+        byte[] array = RandomProvider.generate(Random::new).getRandomBytes(10);
         assertEquals(10, array.length);
     }
 
     @Test
     public void hexConversion() {
-        byte[] array = new UnsecureRandomProvider().randomBytes(200);
+        byte[] array = RandomProvider.generate(Random::new).getRandomBytes(200);
         String hexString = Utilities.toHex(array);
         byte[] resultingArray = Utilities.fromHex(hexString);
         for (int i = 0; i < array.length; i++) {

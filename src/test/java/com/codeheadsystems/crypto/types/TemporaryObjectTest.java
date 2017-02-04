@@ -1,17 +1,14 @@
 package com.codeheadsystems.crypto.types;
 
 import com.codeheadsystems.crypto.Utilities;
-import com.codeheadsystems.crypto.random.RandomProvider;
-import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
-
+import com.codeheadsystems.shash.impl.RandomProvider;
 import org.junit.Test;
 
 import java.util.Optional;
+import java.util.Random;
 
 import static com.codeheadsystems.crypto.Utilities.cloneBytes;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * BSD-Style License 2017
@@ -19,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 public class TemporaryObjectTest {
 
-    private RandomProvider randomProvider = new UnsecureRandomProvider();
+    private RandomProvider randomProvider = RandomProvider.generate(Random::new);
 
     @Test
     public void testDefaultBehavior() throws TemporaryObjectExpiredException {
@@ -62,18 +59,18 @@ public class TemporaryObjectTest {
 
     @Test
     public void testGetTempBytesDefaultBehavior() throws TemporaryObjectExpiredException {
-        byte[] array = randomProvider.randomBytes(5);
+        byte[] array = randomProvider.getRandomBytes(5);
         TemporaryObject<byte[]> to = TemporaryObject.getTemporaryBytes(cloneBytes(array), 2000);
         Optional<byte[]> value = to.getValue();
         assertTrue(value.isPresent());
         assertTrue(Utilities.isSame(array, value.get()));
         to.callWithValue((a2) -> assertTrue(Utilities.isSame(array, a2)));
-        assertTrue(Utilities.isSame(array, to.applyWithValue((a2)->a2)));
+        assertTrue(Utilities.isSame(array, to.applyWithValue((a2) -> a2)));
     }
 
     @Test
     public void testDestroyMethod() {
-        byte[] array = randomProvider.randomBytes(5);
+        byte[] array = randomProvider.getRandomBytes(5);
         TemporaryObject<byte[]> to = TemporaryObject.getTemporaryBytes(cloneBytes(array), 100);
         Optional<byte[]> value = to.getValue();
         assertTrue(value.isPresent());

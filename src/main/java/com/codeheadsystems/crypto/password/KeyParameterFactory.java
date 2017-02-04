@@ -1,10 +1,9 @@
 package com.codeheadsystems.crypto.password;
 
-import com.codeheadsystems.crypto.Hasher;
-import com.codeheadsystems.crypto.Utilities;
-import com.codeheadsystems.crypto.hasher.HasherBuilder;
-import com.codeheadsystems.crypto.random.RandomProvider;
-
+import com.codeheadsystems.shash.Hasher;
+import com.codeheadsystems.shash.HasherBuilder;
+import com.codeheadsystems.shash.SupportedHashAlgorithm;
+import com.codeheadsystems.shash.impl.RandomProvider;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +26,6 @@ public class KeyParameterFactory {
     protected KeyParameterFactory(long expirationInMills, Hasher hasher, RandomProvider randomProvider) {
         this.expirationInMills = expirationInMills;
         this.hasher = requireNonNull(hasher);
-        if (!Utilities.isSecureRandomProvider(randomProvider)) {
-            logger.error("NOT USING A SECURE RANDOM PROVIDER. USING: " + randomProvider.getClass().getCanonicalName());
-        }
         this.randomProvider = randomProvider;
     }
 
@@ -48,7 +44,7 @@ public class KeyParameterFactory {
      */
     public KeyParameterWrapper generate(String password, byte[] salt) {
         logger.debug("generate()");
-        byte[] hashedPassword = hasher.generateHash(password, salt).getHash();
+        byte[] hashedPassword = hasher.hash(salt, password);
         KeyParameter keyParameter = new KeyParameter(hashedPassword);
         return getExpirableKeyParameterWrapper(keyParameter);
     }
@@ -60,7 +56,7 @@ public class KeyParameterFactory {
 
     public byte[] generateRandomKey(int keysizeInBytes) {
         byte[] key = new byte[keysizeInBytes];
-        randomProvider.getRandom().nextBytes(key);
+        randomProvider.getRandomBytes(key);
         return key;
     }
 
@@ -91,8 +87,8 @@ public class KeyParameterFactory {
 
         public KeyParameterFactory build() {
             Hasher hasher = new HasherBuilder()
-                    .iterations(iterationCount)
                     .saltSize(KEY_BYTE_SIZE) // 256 bit
+                    .hashAlgorithm(SupportedHashAlgorithm.getSCryptAlgo(iterationCount))
                     .randomProvider(randomProvider)
                     .build();
             return new KeyParameterFactory(expirationInMills, hasher, randomProvider);

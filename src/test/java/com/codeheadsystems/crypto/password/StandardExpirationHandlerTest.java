@@ -1,9 +1,10 @@
 package com.codeheadsystems.crypto.password;
 
-import com.codeheadsystems.crypto.random.RandomProvider;
-import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
-
+import com.codeheadsystems.crypto.cipher.CipherProvider;
+import com.codeheadsystems.shash.impl.RandomProvider;
 import org.junit.Test;
+
+import java.util.Random;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -14,7 +15,7 @@ public class StandardExpirationHandlerTest {
 
     public static final String PASSWORD = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
 
-    private RandomProvider randomProvider = new UnsecureRandomProvider();
+    private RandomProvider randomProvider = RandomProvider.generate(Random::new);
 
     @Test
     public void testFullExpiration() throws SecretKeyExpiredException, InterruptedException {
@@ -23,7 +24,7 @@ public class StandardExpirationHandlerTest {
                 .expirationInMills(400)
                 .randomProvider(randomProvider)
                 .build();
-        byte[] salt = randomProvider.getSalt();
+        byte[] salt = randomProvider.getRandomBytes(CipherProvider.KEY_BYTE_SIZE);
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt);
         assertNotNull(keyParameterWrapper.getKey());
         Thread.sleep(500);
@@ -42,7 +43,7 @@ public class StandardExpirationHandlerTest {
                 .expirationInMills(500)
                 .randomProvider(randomProvider)
                 .build();
-        byte[] salt = randomProvider.getSalt();
+        byte[] salt = randomProvider.getRandomBytes(CipherProvider.KEY_BYTE_SIZE);
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt);
         assertNotNull(keyParameterWrapper.getKey());
     }
@@ -54,7 +55,7 @@ public class StandardExpirationHandlerTest {
                 .expirationInMills(0)
                 .randomProvider(randomProvider)
                 .build();
-        byte[] salt = randomProvider.getSalt();
+        byte[] salt = randomProvider.getRandomBytes(CipherProvider.KEY_BYTE_SIZE);
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt); // no salt
         assertNotNull(keyParameterWrapper.getKey());
     }
@@ -66,7 +67,7 @@ public class StandardExpirationHandlerTest {
                 .expirationInMills(50)
                 .randomProvider(randomProvider)
                 .build();
-        byte[] salt = randomProvider.getSalt();
+        byte[] salt = randomProvider.getRandomBytes(CipherProvider.KEY_BYTE_SIZE);
         KeyParameterWrapper keyParameterWrapper = keyParameterFactory.generate(PASSWORD, salt); // no salt
         Thread.sleep(100);
         assertNotNull(keyParameterWrapper.getKey());

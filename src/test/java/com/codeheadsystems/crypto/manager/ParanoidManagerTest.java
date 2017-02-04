@@ -3,13 +3,12 @@ package com.codeheadsystems.crypto.manager;
 import com.codeheadsystems.crypto.CryptoException;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
-import com.codeheadsystems.crypto.random.RandomProvider;
-import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
-
+import com.codeheadsystems.shash.impl.RandomProvider;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Random;
 
 import static com.codeheadsystems.crypto.Utilities.getCharset;
 import static com.codeheadsystems.crypto.Utilities.getUuid;
@@ -28,7 +27,7 @@ public class ParanoidManagerTest {
 
     @Before
     public void setRandomFactory() {
-        randomProvider = new UnsecureRandomProvider();
+        randomProvider = RandomProvider.generate(Random::new);
     }
 
     @Before

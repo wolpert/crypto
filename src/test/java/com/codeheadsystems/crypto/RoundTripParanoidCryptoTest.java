@@ -6,13 +6,12 @@ import com.codeheadsystems.crypto.cipher.ParanoidEncrypter;
 import com.codeheadsystems.crypto.password.KeyParameterFactory;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
-import com.codeheadsystems.crypto.random.RandomProvider;
-import com.codeheadsystems.crypto.random.UnsecureRandomProvider;
-
+import com.codeheadsystems.shash.impl.RandomProvider;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Objects;
+import java.util.Random;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -25,7 +24,7 @@ public class RoundTripParanoidCryptoTest {
     public static final String CLEAR_TEXT = "This is not a test... wait... it is...";
     private KeyParameterFactory paranoidKeyParameterFactory;
     private CipherProvider cipherProvider;
-    private RandomProvider randomProvider = new UnsecureRandomProvider();
+    private RandomProvider randomProvider = RandomProvider.generate(Random::new);
 
     @Before
     public void createKeyParameterFactory() {
@@ -45,7 +44,7 @@ public class RoundTripParanoidCryptoTest {
     public void testRoundTrip() throws SecretKeyExpiredException, CryptoException {
         // This test is slow because its using the defaults
         KeyParameterFactory slowDefaultFactory = new KeyParameterFactory.Builder().randomProvider(randomProvider).build();
-        byte[] salt = randomProvider.getSalt();
+        byte[] salt = randomProvider.getRandomBytes(CipherProvider.KEY_BYTE_SIZE);
         KeyParameterWrapper encryptKeyParameterWrapper = slowDefaultFactory.generate(PASSWORD, salt);
         assertEquals(256 / 8, encryptKeyParameterWrapper.getKey().length);
         assertEquals(256 / 8, salt.length);
@@ -65,7 +64,7 @@ public class RoundTripParanoidCryptoTest {
 
     @Test
     public void testRoundTripSaltAsString() throws SecretKeyExpiredException, CryptoException {
-        byte[] salt = randomProvider.getSalt();
+        byte[] salt = randomProvider.getRandomBytes(CipherProvider.KEY_BYTE_SIZE);
         KeyParameterWrapper encryptKeyParameterWrapper = generate(salt);
         String saltString = Utilities.bytesToString(salt);
         byte[] encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
@@ -79,7 +78,7 @@ public class RoundTripParanoidCryptoTest {
 
     @Test(expected = SecretKeyExpiredException.class)
     public void testRoundTripFailureFromExpiredPassword() throws SecretKeyExpiredException, CryptoException {
-        byte[] salt = randomProvider.getSalt();
+        byte[] salt = randomProvider.getRandomBytes(CipherProvider.KEY_BYTE_SIZE);
         KeyParameterWrapper encryptKeyParameterWrapper = generate(salt);
         byte[] encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
 
@@ -92,14 +91,14 @@ public class RoundTripParanoidCryptoTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidIterationCount() throws SecretKeyExpiredException {
-        byte[] salt = randomProvider.getSalt();
+        byte[] salt = randomProvider.getRandomBytes(CipherProvider.KEY_BYTE_SIZE);
         // rebuild the keyParams
         new KeyParameterFactory.Builder().iterationCount(500).build().generate(PASSWORD, salt);
     }
 
     @Test(expected = CryptoException.class)
     public void testRoundTripFailureViaIterationCount() throws SecretKeyExpiredException, CryptoException {
-        byte[] salt = randomProvider.getSalt();
+        byte[] salt = randomProvider.getRandomBytes(CipherProvider.KEY_BYTE_SIZE);
         KeyParameterWrapper encryptKeyParameterWrapper = generate(salt);
         byte[] encryptBytes = getEncryptedByteHolder(encryptKeyParameterWrapper);
         // rebuild the keyParams
@@ -117,7 +116,7 @@ public class RoundTripParanoidCryptoTest {
                 .randomProvider(randomProvider)
                 .build();
         String password = "lkfdsaf0oudsajhklfdsaf7ds0af7uaoshfkldsf9s67yfihsdka";
-        byte[] salt = randomProvider.getSalt();
+        byte[] salt = randomProvider.getRandomBytes(CipherProvider.KEY_BYTE_SIZE);
         KeyParameterWrapper key = factory.generate(password, salt);
         Encrypter encrypter = new ParanoidEncrypter(cipherProvider, randomProvider);
         byte[] encryptBytes = encrypter.encryptBytes(key, clearText);

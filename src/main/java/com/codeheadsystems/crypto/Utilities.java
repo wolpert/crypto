@@ -1,8 +1,5 @@
 package com.codeheadsystems.crypto;
 
-import com.codeheadsystems.crypto.random.RandomProvider;
-import com.codeheadsystems.crypto.random.SecureRandomProvider;
-
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.Hex;
 
@@ -15,16 +12,6 @@ import static java.lang.System.arraycopy;
  * BSD-Style License 2016
  */
 public class Utilities {
-
-    /**
-     * Call this method once to validate the random provider is using the secure provider.
-     *
-     * @param randomProvider that is being checked
-     * @return boolean
-     */
-    public static boolean isSecureRandomProvider(RandomProvider randomProvider) {
-        return randomProvider.equals(SecureRandomProvider.class);
-    }
 
     public static byte[] reduce(byte[] bytes, int length) {
         byte[] finalBytes = new byte[length];

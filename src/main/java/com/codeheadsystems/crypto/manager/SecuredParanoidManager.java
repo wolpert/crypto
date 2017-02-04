@@ -1,6 +1,6 @@
 package com.codeheadsystems.crypto.manager;
 
-import com.codeheadsystems.crypto.random.SecureRandomProvider;
+import com.codeheadsystems.shash.impl.RandomProvider;
 
 /**
  * This version only differs from the ParanoidManager only by enforcing the SecureRandomProvider.
@@ -13,6 +13,6 @@ public class SecuredParanoidManager extends ParanoidManager {
     }
 
     public SecuredParanoidManager(int iterationExponential) throws ParanoidManagerException {
-        super(iterationExponential, new SecureRandomProvider());
+        super(iterationExponential, RandomProvider.generate());
     }
 }

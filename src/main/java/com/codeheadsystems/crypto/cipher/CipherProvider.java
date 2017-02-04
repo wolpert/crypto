@@ -1,7 +1,6 @@
 package com.codeheadsystems.crypto.cipher;
 
 import com.codeheadsystems.crypto.types.ExceptionFunction;
-
 import org.bouncycastle.crypto.engines.AESFastEngine;
 import org.bouncycastle.crypto.modes.AEADBlockCipher;
 import org.bouncycastle.crypto.modes.GCMBlockCipher;

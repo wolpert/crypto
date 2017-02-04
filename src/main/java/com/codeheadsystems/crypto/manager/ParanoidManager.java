@@ -9,12 +9,12 @@ import com.codeheadsystems.crypto.cipher.ParanoidEncrypter;
 import com.codeheadsystems.crypto.password.KeyParameterFactory;
 import com.codeheadsystems.crypto.password.KeyParameterWrapper;
 import com.codeheadsystems.crypto.password.SecretKeyExpiredException;
-import com.codeheadsystems.crypto.random.RandomProvider;
-import com.codeheadsystems.crypto.random.SecureRandomProvider;
-
+import com.codeheadsystems.shash.impl.RandomProvider;
 import org.bouncycastle.crypto.params.KeyParameter;
 
 import java.io.IOException;
+
+import static com.codeheadsystems.crypto.cipher.CipherProvider.KEY_BYTE_SIZE;
 
 /**
  * Effectively a facade around the paranoid facilities. Note that this class does not guarantee
@@ -31,7 +31,7 @@ public class ParanoidManager implements Manager {
     private final RandomProvider randomProvider;
 
     public ParanoidManager() {
-        this(20, new SecureRandomProvider());
+        this(20, RandomProvider.generate());
     }
 
     public ParanoidManager(int iterationExponential, RandomProvider randomProvider) {
@@ -58,7 +58,7 @@ public class ParanoidManager implements Manager {
 
     @Override
     public byte[] freshSalt() {
-        return randomProvider.getSalt();
+        return randomProvider.getRandomBytes(KEY_BYTE_SIZE);
     }
 
     @Override
