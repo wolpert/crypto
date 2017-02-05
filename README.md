@@ -42,13 +42,13 @@ Actually, do not trust me. Look at the code. See what it does and how it does it
 The encryption routines are fairly basic. Comment on the github page if you have any suggestions.
 
 ## Gradle ##
-    compile "com.codeheadsystems:crypto:1.0.2"
+    compile "com.codeheadsystems:crypto:1.0.3"
 
 ## Maven ##
     <dependency>
       <groupId>com.codeheadsystems</groupId>
       <artifactId>crypto</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
     </dependency>
 
 ## Expected Use-case ##
@@ -139,3 +139,9 @@ Note that the ObjectConverter does provide a compression routine.
 Converting bytes to a string is via base64 library provided by Bouncy Castle.
 The Utilities library in this project wraps it. The salt is converted this way
 to a string.
+
+#### VULNERABILITIES ####
+
+ * 2017-02-05: "CVE-2016-1000339: AESFastEngine has a side channel leak". We were using
+ this engine, now we switched to the AESEngine. As always, please use the latest version
+ of this library when possible.

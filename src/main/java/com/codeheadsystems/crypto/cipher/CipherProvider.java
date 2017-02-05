@@ -1,7 +1,7 @@
 package com.codeheadsystems.crypto.cipher;
 
 import com.codeheadsystems.crypto.types.ExceptionFunction;
-import org.bouncycastle.crypto.engines.AESFastEngine;
+import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.AEADBlockCipher;
 import org.bouncycastle.crypto.modes.GCMBlockCipher;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ public class CipherProvider {
 
     private ThreadLocal<AEADBlockCipher> aeadBlockCipherThreadLocal = ThreadLocal.withInitial(() -> {
         logger.debug("initCipher();");
-        AESFastEngine aesFastEngine = new AESFastEngine();
+        AESEngine aesFastEngine = new AESEngine();
         return new GCMBlockCipher(aesFastEngine);
     });
 
